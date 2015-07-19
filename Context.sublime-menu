@@ -1,0 +1,7 @@
+[
+{
+    "id" : "scoggle",
+    "caption" : "Toggle between Scala and Test",
+    "command" : "scoggle"
+}
+]

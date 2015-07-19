@@ -1,0 +1,4 @@
+[
+    { "keys": ["super+shift+e"], "command": "scoggle",
+        "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]}
+]
