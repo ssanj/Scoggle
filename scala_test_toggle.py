@@ -1,5 +1,7 @@
 import sublime, sublime_plugin, os, fnmatch
 
+
+#TODO: Remove the .scala at the end of test_suffixes and create with file_ext.
 class ScoggleCommand(sublime_plugin.TextCommand):
     def run(self, edit):        
         self.scoggle()
@@ -30,7 +32,7 @@ class ScoggleCommand(sublime_plugin.TextCommand):
         root_dir = self.get_root_path(current_file, test_srcs)
         #since it is a test file we need to remove the test suffixes from the prefix
         prefixMinusTestSuffix = self.removeTestSuffixes(prefix, test_suffixes)
-        matches= self.find_matching_files(root_dir, prod_srcs, prefixMinusTestSuffix, [".scala"])
+        matches = self.find_matching_files(root_dir, prod_srcs, prefixMinusTestSuffix, [".scala"])
         self.show_results_list(matches)
 
     def show_error_message(self, message):        
@@ -48,8 +50,11 @@ class ScoggleCommand(sublime_plugin.TextCommand):
         return prefix        
 
     def show_results_list(self, matches):
-        file_names = list(map(lambda x: os.path.split(x)[1], matches))
-        sublime.active_window().show_quick_panel(file_names, self.file_selected(matches))
+        if (len(matches) == 1):
+            sublime.active_window().open_file(matches[0])
+        else:    
+            file_names = list(map(lambda x: os.path.split(x)[1], matches))
+            sublime.active_window().show_quick_panel(file_names, self.file_selected(matches))
         
     def is_production_file(self, current_file, prod_srcs):
         return self.is_on_path(current_file, prod_srcs)
