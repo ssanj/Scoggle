@@ -11,6 +11,7 @@
     "test_suffixes" :
     [
         "Spec.scala",
+        "IntSpec.scala",
         "Suite.scala",
         "Test.scala",
         "Specification.scala"

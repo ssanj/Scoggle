@@ -2,6 +2,7 @@ import sublime, sublime_plugin, os, fnmatch
 
 
 #TODO: Remove the .scala at the end of test_suffixes and create with file_ext.
+#TODO: What should we do if we can't get root_path? Encode in a type/class.
 class ScoggleCommand(sublime_plugin.TextCommand):
     def run(self, edit):        
         self.scoggle()
@@ -41,13 +42,14 @@ class ScoggleCommand(sublime_plugin.TextCommand):
     def removeTestSuffixes(self, prefix, suffixes):
         test_suffixes = list(map(lambda x: os.path.splitext(x)[0], suffixes))
         print("prefix, test_suffixes: " + str(test_suffixes))
-        for ts in test_suffixes:
-            if (prefix.endswith(ts)):
-                print("removing suffix: " + prefix.rstrip(ts))
-                return prefix.rstrip(ts)
-
-        print("returning default prefix: " + prefix)
-        return prefix        
+        possibleSuffixes = [ts for ts in test_suffixes if prefix.endswith(ts)]
+        if (len(possibleSuffixes) == 0):
+            self.out("returning default prefix", prefix)
+            return prefix
+        else:        
+            suffix = max(possibleSuffixes, key=len) #find longest match
+            self.out("returning stripped prefix", prefix.rstrip(suffix))
+            return prefix.rstrip(suffix)
 
     def show_results_list(self, matches):
         if (len(matches) == 1):
