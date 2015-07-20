@@ -3,6 +3,9 @@ import sublime, sublime_plugin, os, fnmatch
 
 #TODO: Remove the .scala at the end of test_suffixes and create with file_ext.
 #TODO: What should we do if we can't get root_path? Encode in a type/class.
+#TODO: Find a better way to log debug messages.
+#TODO: Add a way to create a test/prod class if not found. Expand a template?
+#TODO: Add local configuration in the working directory to override settings.
 class ScoggleCommand(sublime_plugin.TextCommand):
     def run(self, edit):        
         self.scoggle()
@@ -37,7 +40,10 @@ class ScoggleCommand(sublime_plugin.TextCommand):
         self.show_results_list(matches)
 
     def show_error_message(self, message):        
-        sublime.error_message(message)        
+        sublime.error_message(message)  
+
+    def show_status_message(self, message):        
+        sublime.status_message(message)                
 
     def removeTestSuffixes(self, prefix, suffixes):
         test_suffixes = list(map(lambda x: os.path.splitext(x)[0], suffixes))
@@ -52,7 +58,9 @@ class ScoggleCommand(sublime_plugin.TextCommand):
             return prefix.rstrip(suffix)
 
     def show_results_list(self, matches):
-        if (len(matches) == 1):
+        if (len(matches) == 0):
+            self.show_error_message("Could not find matching file.")
+        elif (len(matches) == 1):
             sublime.active_window().open_file(matches[0])
         else:    
             file_names = list(map(lambda x: os.path.split(x)[1], matches))
