@@ -1,0 +1,20 @@
+{
+    "production_srcs" :
+    [
+        "/src/main/scala"
+    ],
+    "test_srcs" :
+    [
+        "/src/test/scala",
+        "/src/it/scala"
+    ],
+    "test_suffixes" :
+    [
+        "Spec.scala",
+        "Suite.scala",
+        "Test.scala",
+        "Specification.scala"
+    ],
+    "project_config" : true,
+    "file_ext" : ".scala"
+}
