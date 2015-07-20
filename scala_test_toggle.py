@@ -1,36 +1,40 @@
 import sublime, sublime_plugin, os, fnmatch
 
 class ScoggleCommand(sublime_plugin.TextCommand):
-    def run(self, edit):
-        self.matches = []
+    def run(self, edit):        
         self.scoggle()
         
-    def scoggle(self):
-        
+    def scoggle(self):        
         current_file = self.view.file_name()
         settings = self.load_settings()
-        #root_dir = current_file.partition("/src/")[0]        
+
         prod_srcs = settings.get("production_srcs")
         test_srcs = settings.get("test_srcs")
         test_suffixes = settings.get("test_suffixes")
         prefix = os.path.splitext(os.path.split(current_file)[1])[0]
 
         if (self.is_production_file(current_file, prod_srcs)):
-            print("prod route")
-            root_dir = self.get_root_path(current_file, prod_srcs)
-            self.matches = self.find_matching_files(root_dir, test_srcs, prefix, test_suffixes)
-            print("matches: " + str(self.matches))
-            self.show_results_list(self.matches)        
+            self.findProdMatches(current_file, prod_srcs, test_srcs, prefix, test_suffixes)
         elif (self.is_test_file(current_file, test_srcs)):
-            print("test route")
-            root_dir = self.get_root_path(current_file, test_srcs)
-            #since it is a test file we need to remove the test suffixes from the prefix
-            prefixMinusTestSuffix = self.removeTestSuffixes(prefix, test_suffixes)
-            self.matches= self.find_matching_files(root_dir, prod_srcs, prefixMinusTestSuffix, [".scala"])
-            print("matches: " + str(self.matches))
-            self.show_results_list(self.matches)        
+            self.findTestMatches(current_file, prod_srcs, test_srcs, prefix, test_suffixes)
         else:
-            sublime.error_message("There is a problem with your configuration.")    
+            self.show_error_message("There is a problem with your configuration.")    
+
+    def findProdMatches(self, current_file, prod_srcs, test_srcs, prefix, test_suffixes):
+        root_dir = self.get_root_path(current_file, prod_srcs)
+        matches = self.find_matching_files(root_dir, test_srcs, prefix, test_suffixes)
+        self.show_results_list(matches)        
+
+    def findTestMatches(self, current_file, prod_srcs, test_srcs, prefix, test_suffixes):    
+        print("test route")
+        root_dir = self.get_root_path(current_file, test_srcs)
+        #since it is a test file we need to remove the test suffixes from the prefix
+        prefixMinusTestSuffix = self.removeTestSuffixes(prefix, test_suffixes)
+        matches= self.find_matching_files(root_dir, prod_srcs, prefixMinusTestSuffix, [".scala"])
+        self.show_results_list(matches)
+
+    def show_error_message(self, message):        
+        sublime.error_message(message)        
 
     def removeTestSuffixes(self, prefix, suffixes):
         test_suffixes = list(map(lambda x: os.path.splitext(x)[0], suffixes))
@@ -45,7 +49,7 @@ class ScoggleCommand(sublime_plugin.TextCommand):
 
     def show_results_list(self, matches):
         file_names = list(map(lambda x: os.path.split(x)[1], matches))
-        sublime.active_window().show_quick_panel(file_names, self.file_selected)
+        sublime.active_window().show_quick_panel(file_names, self.file_selected(matches))
         
     def is_production_file(self, current_file, prod_srcs):
         return self.is_on_path(current_file, prod_srcs)
@@ -63,10 +67,12 @@ class ScoggleCommand(sublime_plugin.TextCommand):
                 return current_file.partition(p)[0]
         #what if we can't determine root path?
 
+    def file_selected(self, matches):
+        def handle_selection(selected_index):
+            if selected_index != -1:
+                sublime.active_window().open_file(matches[selected_index])
 
-    def file_selected(self, selected_index):
-        if selected_index != -1:
-            sublime.active_window().open_file(self.matches[selected_index])
+        return handle_selection
 
     def load_settings(self):
         #check for settings in the current dir. If it exists return that
