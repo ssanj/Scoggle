@@ -1,4 +1,4 @@
-import sublime, sublime_plugin, os, fnmatch
+import sublime, sublime_plugin, os, fnmatch, re
 
 
 #TODO: Remove the .scala at the end of test_suffixes and create with file_ext.
@@ -6,6 +6,7 @@ import sublime, sublime_plugin, os, fnmatch
 #TODO: Find a better way to log debug messages.
 #TODO: Add a way to create a test/prod class if not found. Expand a template?
 #TODO: Add local configuration in the working directory to override settings.
+#TODO: Add an excludes dir to configuration.
 class ScoggleCommand(sublime_plugin.TextCommand):
     def run(self, edit):        
         self.scoggle()
@@ -54,8 +55,9 @@ class ScoggleCommand(sublime_plugin.TextCommand):
             return prefix
         else:        
             suffix = max(possibleSuffixes, key=len) #find longest match
-            self.out("returning stripped prefix", prefix.rstrip(suffix))
-            return prefix.rstrip(suffix)
+            prefixMinusTestSuffix = re.sub(suffix + '$', '', prefix)
+            self.out("returning stripped prefix", prefixMinusTestSuffix)
+            return prefixMinusTestSuffix
 
     def show_results_list(self, matches):
         if (len(matches) == 0):
@@ -63,7 +65,7 @@ class ScoggleCommand(sublime_plugin.TextCommand):
         elif (len(matches) == 1):
             sublime.active_window().open_file(matches[0])
         else:    
-            file_names = list(map(lambda x: os.path.split(x)[1], matches))
+            file_names = list(map(lambda x: [os.path.split(x)[1], x], matches))
             sublime.active_window().show_quick_panel(file_names, self.file_selected(matches))
         
     def is_production_file(self, current_file, prod_srcs):
