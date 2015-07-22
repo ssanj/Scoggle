@@ -1,12 +1,5 @@
 import sublime, sublime_plugin, os, fnmatch, re
 
-
-#TODO: Remove the .scala at the end of test_suffixes and create with file_ext.
-#TODO: What should we do if we can't get root_path? Encode in a type/class.
-#TODO: Find a better way to log debug messages.
-#TODO: Add a way to create a test/prod class if not found. Expand a template?
-#TODO: Add local configuration in the working directory to override settings.
-#TODO: Add an excludes dir to configuration.
 class ScoggleCommand(sublime_plugin.TextCommand):
     def run(self, edit):        
         self.scoggle()
