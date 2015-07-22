@@ -17,10 +17,23 @@ Configuration would take the form of:
 
 ```{.javascript}
 {
-    "main_dir": ["dir1", "dir2"],
-    "test_dir": ["dir1", "dir2", "dir3"],
-    "test_suffixes": ["Test", "Spec", "Suite", "Specification", "IntSpec"],
-    "allow_project_override": true
+    "production_srcs" :
+    [
+        "/src/main/scala"
+    ],
+    "test_srcs" :
+    [
+        "/src/test/scala",
+        "/src/it/scala"
+    ],
+    "test_suffixes" :
+    [
+        "Spec.scala",
+        "IntSpec.scala",
+        "Suite.scala",
+        "Test.scala",
+        "Specification.scala"
+    ]
 }
 ```
 

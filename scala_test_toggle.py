@@ -13,11 +13,14 @@ class ScoggleCommand(sublime_plugin.TextCommand):
         
     def scoggle(self):        
         current_file = self.view.file_name()
+        #hide all the settings code in a class.
         settings = self.load_settings()
+        project_settings = self.load_project_settings()
 
-        prod_srcs = settings.get("production_srcs")
-        test_srcs = settings.get("test_srcs")
-        test_suffixes = settings.get("test_suffixes")
+        prod_srcs = self.getSetting("production_srcs", project_settings, settings)
+        test_srcs = self.getSetting("test_srcs", project_settings, settings)
+        test_suffixes = self.getSetting("test_suffixes", project_settings, settings)
+
         prefix = os.path.splitext(os.path.split(current_file)[1])[0]
 
         if (self.is_production_file(current_file, prod_srcs)):
@@ -92,13 +95,13 @@ class ScoggleCommand(sublime_plugin.TextCommand):
         return handle_selection
 
     def load_settings(self):
-        #check for settings in the current dir. If it exists return that
-        # root_config = os.path.join(root_dir, "Scoggle.sublime-settings")
-        # if (os.path.isfile(root_config)):
-        #     return sublime.load_settings("Scoggle.sublime-settings")
-        # else:    
-
         return sublime.load_settings("Scoggle.sublime-settings")
+
+    def load_project_settings(self):
+        return self.view.settings()     
+
+    def getSetting(self, key, conf1, conf2):    
+        return conf1.get(key, conf2.get(key))
 
     #post_fixes should be of the form ['Spec.scala', 'Test.scala']
     def find_matching_files(self, root_dir, src_dirs, prefix, suffixes):
