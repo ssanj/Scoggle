@@ -9,6 +9,8 @@ class ScoggleTest(unittest.TestCase):
   def tearDown(self):
     self.cut = None    
 
+  # does_file_contain_path
+
   def test_does_file_contain_path_with_single_matching_path(self):      
       #tests whether a single path can be is contained within a given file path.
       self.assertEqual(self.cut.does_file_contain_path("/root/project/testDir/package/someFile", ["/testDir"]), True)    
@@ -32,12 +34,21 @@ class ScoggleTest(unittest.TestCase):
   def test_get_first_root_path_or_error_with_single_matching_path(self):
       self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/testDir"]), "/root/project")            
 
+  # does_file_contain_path
+
+  def test_get_first_root_path_or_error_with_single_matching_path(self):
+      self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/testDir"]), "/root/project")            
+
   def test_get_first_root_path_or_error_with_single_matching_path_with_multiple_non_matching_paths(self):
       self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/blah/Dir", "/testDir", "/IntTest"]), "/root/project")            
 
   def test_get_first_root_path_or_error_with_single_non_matching_path(self):      
     with self.assertRaises(scoggle.CantFindRootPathError):
         self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/blah/Dir"]), "/root/project")               
+
+  def test_get_first_root_path_or_error_with_multiple_non_matching_paths(self):      
+    with self.assertRaises(scoggle.CantFindRootPathError):
+        self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/IntTest", "/blah/Dir"]), "/root/project")               
 
 if __name__ == '__main__':
     unittest.main()
