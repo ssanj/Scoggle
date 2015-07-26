@@ -1,10 +1,22 @@
-import sublime, sublime_plugin, os, fnmatch, re
+import sublime
+import sublime_plugin
+import os
+import fnmatch
+import re
+import sys
+
+#hack to add scoggle as a module to this plugin. Is there a better way?
+#http://stackoverflow.com/questions/15180537/how-to-include-third-party-python-packages-in-sublime-text-2-plugins
+sys.path.append(os.path.join(os.path.dirname(__file__), "."))
+
+import scoggle
 
 class ScoggleCommand(sublime_plugin.TextCommand):
     def run(self, edit):        
-        self.scoggle()
+        self.scoggle = scoggle.Scoggle()
+        self.perform()
         
-    def scoggle(self):        
+    def perform(self):        
         current_file = self.view.file_name()
         #hide all the settings code in a class.
         settings = self.load_settings()
@@ -14,7 +26,7 @@ class ScoggleCommand(sublime_plugin.TextCommand):
         test_srcs = self.getSetting("test_srcs", project_settings, settings)
         test_suffixes = self.getSetting("test_suffixes", project_settings, settings)
 
-        prefix = os.path.splitext(os.path.split(current_file)[1])[0]
+        prefix = self.scoggle.get_base_file(current_file)
 
         if (self.is_production_file(current_file, prod_srcs)):
             self.findProdMatches(current_file, prod_srcs, test_srcs, prefix, test_suffixes)
@@ -24,17 +36,23 @@ class ScoggleCommand(sublime_plugin.TextCommand):
             self.show_error_message("There is a problem with your configuration.")    
 
     def findProdMatches(self, current_file, prod_srcs, test_srcs, prefix, test_suffixes):
-        root_dir = self.get_root_path(current_file, prod_srcs)
-        matches = self.find_matching_files(root_dir, test_srcs, prefix, test_suffixes)
-        self.show_results_list(matches)        
+        try:
+            root_dir = self.scoggle.get_first_root_path_or_error(current_file, prod_srcs)
+            matches = self.find_matching_files(root_dir, test_srcs, prefix, test_suffixes)
+            self.show_results_list(matches)        
+        except scoggle.CantFindRootPathError as cfrpe:
+            self.show_error_message("Could not find root path for production. " + cfrpe.cause)
+                
 
     def findTestMatches(self, current_file, prod_srcs, test_srcs, prefix, test_suffixes):    
-        print("test route")
-        root_dir = self.get_root_path(current_file, test_srcs)
-        #since it is a test file we need to remove the test suffixes from the prefix
-        prefixMinusTestSuffix = self.removeTestSuffixes(prefix, test_suffixes)
-        matches = self.find_matching_files(root_dir, prod_srcs, prefixMinusTestSuffix, [".scala"])
-        self.show_results_list(matches)
+        try:
+            root_dir = self.scoggle.get_first_root_path_or_error(current_file, test_srcs)
+            #since it is a test file we need to remove the test suffixes from the prefix
+            prefixMinusTestSuffix = self.removeTestSuffixes(prefix, test_suffixes)
+            matches = self.find_matching_files(root_dir, prod_srcs, prefixMinusTestSuffix, [".scala"])
+            self.show_results_list(matches)
+        except scoggle.CantFindRootPathError as cfrpe:
+            self.show_error_message("Could not find root path for tests. " + cfrpe.cause)    
 
     def show_error_message(self, message):        
         sublime.error_message(message)  
@@ -65,20 +83,10 @@ class ScoggleCommand(sublime_plugin.TextCommand):
             sublime.active_window().show_quick_panel(file_names, self.file_selected(matches))
         
     def is_production_file(self, current_file, prod_srcs):
-        return self.is_on_path(current_file, prod_srcs)
+        return self.scoggle.does_file_contain_path(current_file, prod_srcs)
 
     def is_test_file(self, current_file, test_srcs):
-        return self.is_on_path(current_file, test_srcs)
-
-    def is_on_path(self, current_file, paths):
-        result = [p for p in paths if current_file.find(p) != -1]
-        return len(result) > 0
-
-    def get_root_path(self, current_file, paths):
-        for p in paths:
-            if current_file.find(p) != -1:
-                return current_file.partition(p)[0]
-        #what if we can't determine root path?
+        return self.scoggle.does_file_contain_path(current_file, test_srcs)
 
     def file_selected(self, matches):
         def handle_selection(selected_index):

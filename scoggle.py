@@ -1,5 +1,9 @@
+import os
 
 class Scoggle:
+
+    def get_base_file(self, file):
+        return os.path.splitext(os.path.split(file)[1])[0]
 
     def does_file_contain_path(self, file, paths):
         result = [p for p in paths if file.find(p) != -1]
@@ -11,6 +15,24 @@ class Scoggle:
                 return file.partition(p)[0]
 
         raise CantFindRootPathError(file, paths)       
+
+    # def find_matching_files(self, root_dir, src_dirs, prefix, suffixes):
+    #     matched_files = []
+    #     print("prefix: " + prefix)
+    #     print("suffixes" + str(suffixes))
+    #     extensions = tuple(map(lambda x: (prefix + x) , suffixes))
+    #     print("extensions: " + str(extensions))
+    #     fullpath_srcs = list(map(lambda path: os.path.join(root_dir, path.lstrip(os.path.sep)), src_dirs))
+    #     print("fullpath_srcs: " + str(fullpath_srcs))
+
+    #     for src_dir in fullpath_srcs:
+    #         for root, dirnames, filenames in os.walk(src_dir):
+    #             print("filenames: " + str(filenames))
+    #             hits = [os.path.join(root, f) for f in filenames if f.endswith(extensions)]
+    #             matched_files.extend(hits)
+
+    #     print("matches:" + str(matched_files))        
+    #     return matched_files        
 
 class CantFindRootPathError(Exception):
     

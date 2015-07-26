@@ -43,12 +43,23 @@ class ScoggleTest(unittest.TestCase):
       self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/blah/Dir", "/testDir", "/IntTest"]), "/root/project")            
 
   def test_get_first_root_path_or_error_with_single_non_matching_path(self):      
-    with self.assertRaises(scoggle.CantFindRootPathError):
-        self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/blah/Dir"]), "/root/project")               
+      with self.assertRaises(scoggle.CantFindRootPathError):
+            self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/blah/Dir"]), "/root/project")               
 
   def test_get_first_root_path_or_error_with_multiple_non_matching_paths(self):      
-    with self.assertRaises(scoggle.CantFindRootPathError):
-        self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/IntTest", "/blah/Dir"]), "/root/project")               
+      with self.assertRaises(scoggle.CantFindRootPathError):
+          self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/IntTest", "/blah/Dir"]), "/root/project")               
+
+  # get_base_file
+  
+  def test_get_base_file_with_pathed_file_and_extension(self):
+      self.assertEqual(self.cut.get_base_file("/root/project/testDir/package/someFile.ext"), "someFile")                  
+
+  def test_get_base_file_with_pathed_file_without_extension(self):
+      self.assertEqual(self.cut.get_base_file("/root/project/testDir/package/someFile"), "someFile")                  
+
+  def test_get_base_file_without_path(self):
+      self.assertEqual(self.cut.get_base_file("someFile.abc"), "someFile")                  
 
 if __name__ == '__main__':
     unittest.main()
