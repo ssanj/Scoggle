@@ -1,9 +1,16 @@
 import os
+import re
 
 class Scoggle:
 
     def get_base_file(self, file):
-        return os.path.splitext(os.path.split(file)[1])[0]
+        return os.path.splitext(os.path.split(file)[1])[0]    
+
+    def get_file_without_extension(self, file):
+        return os.path.splitext(file)[0]    
+
+    def get_files_without_extension(self, files):
+        return list(map(lambda x: self.get_file_without_extension(x), files))
 
     def does_file_contain_path(self, file, paths):
         result = [p for p in paths if file.find(p) != -1]
@@ -25,32 +32,31 @@ class Scoggle:
     # src_dirs - This should be a list absolute paths to the directories to search
     # suffixes - This should be a tuple of suffixes. suffixes should be of the form ['Name1.ext1', 'Name2.ext2]
     # its probably better to pass in the file extension as well.
-    def search_dirs__for_files_with_suffix(self, src_dirs, suffixes):
+    # walker - something that returns a [(root, dirnames, filesnames)]
+    def search_dirs_for_files_with_suffix(self, src_dirs, suffixes, walker):
         matched_files = []
-        for src_dir in fullpath_srcs:
-            for root, dirnames, filenames in os.walk(src_dir):
+        for src_dir in src_dirs:
+            for root, dirnames, filenames in walker(src_dir):
                 print("filenames: " + str(filenames))
                 hits = [os.path.join(root, f) for f in filenames if f.endswith(suffixes)]
                 matched_files.extend(hits)  
         return matched_files              
 
-    # def find_matching_files(self, root_dir, src_dirs, prefix, suffixes):
-    #     matched_files = []
-    #     print("prefix: " + prefix)
-    #     print("suffixes" + str(suffixes))
-    #     extensions = self.prepend_prefix_to_suffixes(prefix, suffixes)
-    #     print("extensions: " + str(extensions))
-    #     fullpath_srcs = self.prepend_root_dir_to_paths(root_dir, src_dirs)
-    #     print("fullpath_srcs: " + str(fullpath_srcs))
+    def remove_largest_suffix_from_prefix(self, prefix, suffixes):        
+        possibleSuffixes = [ts for ts in suffixes if prefix.endswith(ts)]
+        if (len(possibleSuffixes) == 0):
+            return prefix
+        else:        
+            suffix = max(possibleSuffixes, key=len) #find longest match
+            prefixMinusTestSuffix = re.sub(suffix + '$', '', prefix)
+            return prefixMinusTestSuffix    
 
-    #     for src_dir in fullpath_srcs:
-    #         for root, dirnames, filenames in os.walk(src_dir):
-    #             print("filenames: " + str(filenames))
-    #             hits = [os.path.join(root, f) for f in filenames if f.endswith(extensions)]
-    #             matched_files.extend(hits)
 
-    #     print("matches:" + str(matched_files))        
-    #     return matched_files        
+    # suffixes - should be of the form ['Name1.ext1', 'Name2.ext2]
+    def find_matching_files(self, root_dir, src_dirs, prefix, suffixes):       
+        extensions = self.prepend_prefix_to_suffixes(prefix, suffixes)
+        fullpath_srcs = self.prepend_root_dir_to_paths(root_dir, src_dirs)
+        return self.search_dirs_for_files_with_suffix(fullpath_srcs, extensions, os.walk)
 
 class CantFindRootPathError(Exception):
     

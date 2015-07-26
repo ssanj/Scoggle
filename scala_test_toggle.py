@@ -10,14 +10,17 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), "."))
 
 import scoggle
+import sublime_wrapper
 
 class ScoggleCommand(sublime_plugin.TextCommand):
     def run(self, edit):        
         self.scoggle = scoggle.Scoggle()
+        self.wrapper = sublime_wrapper.SublimeWrapper()
         self.perform()
         
     def perform(self):        
-        current_file = self.view.file_name()
+        # current_file = self.view.file_name()
+        current_file = self.wrapper.current_file(self.view)
         #hide all the settings code in a class.
         settings = self.load_settings()
         project_settings = self.load_project_settings()
@@ -60,18 +63,9 @@ class ScoggleCommand(sublime_plugin.TextCommand):
     def show_status_message(self, message):        
         sublime.status_message(message)                
 
-    def removeTestSuffixes(self, prefix, suffixes):
-        test_suffixes = list(map(lambda x: os.path.splitext(x)[0], suffixes))
-        print("prefix, test_suffixes: " + str(test_suffixes))
-        possibleSuffixes = [ts for ts in test_suffixes if prefix.endswith(ts)]
-        if (len(possibleSuffixes) == 0):
-            self.out("returning default prefix", prefix)
-            return prefix
-        else:        
-            suffix = max(possibleSuffixes, key=len) #find longest match
-            prefixMinusTestSuffix = re.sub(suffix + '$', '', prefix)
-            self.out("returning stripped prefix", prefixMinusTestSuffix)
-            return prefixMinusTestSuffix
+    def removeTestSuffixes(self, prefix, suffixes):    
+        return self.scoggle.remove_largest_suffix_from_prefix(prefix, 
+                self.scoggle.get_files_without_extension(suffixes))
 
     def show_results_list(self, matches):
         if (len(matches) == 0):
@@ -106,22 +100,7 @@ class ScoggleCommand(sublime_plugin.TextCommand):
 
     #post_fixes should be of the form ['Spec.scala', 'Test.scala']
     def find_matching_files(self, root_dir, src_dirs, prefix, suffixes):
-        matched_files = []
-        print("prefix: " + prefix)
-        print("suffixes" + str(suffixes))
-        extensions = tuple(map(lambda x: (prefix + x) , suffixes))
-        print("extensions: " + str(extensions))
-        fullpath_srcs = list(map(lambda path: os.path.join(root_dir, path.lstrip(os.path.sep)), src_dirs))
-        print("fullpath_srcs: " + str(fullpath_srcs))
-
-        for src_dir in fullpath_srcs:
-            for root, dirnames, filenames in os.walk(src_dir):
-                print("filenames: " + str(filenames))
-                hits = [os.path.join(root, f) for f in filenames if f.endswith(extensions)]
-                matched_files.extend(hits)
-
-        print("matches:" + str(matched_files))        
-        return matched_files
+        return self.scoggle.find_matching_files(root_dir, src_dirs, prefix, suffixes)
 
     def out(self, name, value): print(str(name) + ":" + str(value))    
 
