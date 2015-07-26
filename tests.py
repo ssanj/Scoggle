@@ -61,5 +61,25 @@ class ScoggleTest(unittest.TestCase):
   def test_get_base_file_without_path(self):
       self.assertEqual(self.cut.get_base_file("someFile.abc"), "someFile")                  
 
+ # prepend_prefix_to_suffixes
+ 
+  def test_prepend_prefix_to_suffixes_with_multiple_suffixes(self):
+      self.assertEqual(self.cut.prepend_prefix_to_suffixes("BaseFile", ["Test", "Suite", "Spec"]), ("BaseFileTest", "BaseFileSuite", "BaseFileSpec"))
+
+  def test_prepend_prefix_to_suffixes_with_empty_suffix_list(self):
+      self.assertEqual(self.cut.prepend_prefix_to_suffixes("BaseFile", []), ())
+
+ # prepend_root_dir_to_paths
+
+  def test_prepend_root_dir_to_paths_with_single_source_dir_with_leading_path_sep(self):
+      self.assertEqual(self.cut.prepend_root_dir_to_paths("/root/project/", ["/package1"]), ["/root/project/package1"]) 
+
+  def test_prepend_root_dir_to_paths_with_single_source_dir_without_leading_path_sep(self):
+      self.assertEqual(self.cut.prepend_root_dir_to_paths("/root/project/", ["package1"]), ["/root/project/package1"]) 
+
+  def test_prepend_root_dir_to_paths_with_multiple_source_dirs_with_and_without_leading_path_seps(self):
+      self.assertEqual(self.cut.prepend_root_dir_to_paths("/root/project/", ["package1", "/package2", "/package3/package4/"]), 
+          ["/root/project/package1", "/root/project/package2", "/root/project/package3/package4/"]) 
+
 if __name__ == '__main__':
     unittest.main()
