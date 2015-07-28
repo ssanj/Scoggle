@@ -1,3 +1,5 @@
 [
-    { "caption": "Scoggle: Toggle between Prod/Test", "command": "scoggle" }
+    { "caption": "Scoggle: Toggle exact", "command": "scoggle", "args": {"matcher": "prefix_suffix_matcher"} },
+    { "caption": "Scoggle: Toggle wildcard", "command": "scoggle", "args": {"matcher": "prefix_wildcard_suffix_matcher"}},
+    { "caption": "Scoggle: Toggle fuzzy", "command": "scoggle", "args": {"matcher": "wildcard_prefix_wildcard_suffix_matcher"} }
 ]

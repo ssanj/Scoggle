@@ -1,0 +1,11 @@
+[
+    { "keys": ["ctrl+shift+e"], "command": "scoggle", "args": {"matcher": "prefix_suffix_matcher"}, 
+        "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]},
+
+    { "keys": ["ctrl+shift+ctrl+e"], "command": "scoggle", "args": {"matcher": "prefix_wildcard_suffix_matcher"}, 
+    "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]},
+
+    { "keys": ["ctrl+shift+ctrl+x"], "command": "scoggle", "args": {"matcher": "wildcard_prefix_wildcard_suffix_matcher"}, 
+    "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]},
+    
+]

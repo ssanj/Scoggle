@@ -1,5 +1,6 @@
 import unittest
 import scoggle
+import scoggle_types as stypes
 import os
 
 class ScoggleTest(unittest.TestCase):
@@ -44,11 +45,11 @@ class ScoggleTest(unittest.TestCase):
       self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/blah/Dir", "/testDir", "/IntTest"]), "/root/project")            
 
   def test_get_first_root_path_or_error_with_single_non_matching_path(self):      
-      with self.assertRaises(scoggle.CantFindRootPathError):
+      with self.assertRaises(stypes.CantFindRootPathError):
             self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/blah/Dir"]), "/root/project")               
 
   def test_get_first_root_path_or_error_with_multiple_non_matching_paths(self):      
-      with self.assertRaises(scoggle.CantFindRootPathError):
+      with self.assertRaises(stypes.CantFindRootPathError):
           self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/IntTest", "/blah/Dir"]), "/root/project")               
 
   # get_base_file
@@ -112,48 +113,10 @@ class ScoggleTest(unittest.TestCase):
   def test_get_files_without_extension_with_files_with_an_extension(self):
       self.assertEqual(self.cut.get_files_without_extension(["Foo.bar", "Baree.baz"]), ["Foo", "Baree"])
 
-  # search_dirs_for_files_with_suffix
-  def test_search_dirs_for_files_with_suffix(self):
+  def test_find_matching_words_with_no_prefix(self):
+      self.assertEqual(self.cut.find_matching_words(""), [])    
 
-    class Directory:
-        def __init__(self, name, files):
-             self.name = name
-             self.files = files
-
-    class FileStructure:
-        def __init__(self, name, directories):
-            self.name = name
-            self.directories = directories
-
-    unit_dir = FileStructure("/root/projects/Random/unit", [Directory("package1", ["Feature1Spec", "Feature2Spec"]),
-                                                            Directory("package2", ["Feature4Spec", "Feature5Spec"])])
-
-    int_dir = FileStructure("/root/projects/Random/integration", [Directory("package1", ["Feature1IntSpec", "Feature2IntSpec"]),
-                                                                 Directory("package2", ["Feature4IntSpec", "Feature5IntSpec"]),
-                                                                 Directory("package3", ["Feature3IntSpec"])])                                                               
-
-    acceptance_dir = FileStructure("/root/projects/Random/acceptance", [Directory("package1", ["Feature1AcceptanceSpec"])])
-
-    src_dirs = [unit_dir, int_dir, acceptance_dir]
-
-    suffixes = ("Feature1Spec", "Feature1IntSpec", "Feature1AcceptanceSpec") #includes prefix and suffix together.
-
-    def testWalker(src_dir):
-      root = src_dir.name
-      dirs = src_dir.directories
-
-      matched_files = []
-      for d in dirs:
-          t = tuple([os.path.join(root, d.name), [], d.files])
-          matched_files.append(t)        
-
-      return matched_files          
-
-    self.assertEqual(self.cut.search_dirs_for_files_with_suffix(src_dirs, suffixes, testWalker), 
-        ["/root/projects/Random/unit/package1/Feature1Spec", 
-         "/root/projects/Random/integration/package1/Feature1IntSpec", 
-         "/root/projects/Random/acceptance/package1/Feature1AcceptanceSpec"])      
-
-
-if __name__ == '__main__':
-    unittest.main()
+  def test_find_matching_words_with_prefix(self):
+      result = self.cut.find_matching_words("AnXyzWithSomeContext")
+      self.assertEqual(result, 
+          ["AnXyzWithSomeContext", "XyzWithSomeContext", "WithSomeContext", "SomeContext", "Context"])

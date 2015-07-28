@@ -16,6 +16,7 @@
         "Test.scala",
         "Specification.scala"
     ],
-    "project_config" : true,
-    "file_ext" : ".scala"
+    "log" : false,
+    "file_ext" : ".scala",
+    "display_errors_in" : "dialog" // one of ("dialog", "status_bar", "dont_display")
 }
