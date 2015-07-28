@@ -40,8 +40,8 @@ Configuration would take the form of:
 ## TODOs ##
 
 1. Remove the .scala at the end of test_suffixes and create with file_ext.
-1. What should we do if we can't get root_path? Encode in a type/class?
-1. Find a better way to log debug messages.
+1. What should we do if we can't get root_path?
+1. Find a better way to log debug messages. Debug flag?
 1. Add a way to create a test/prod class if not found. Expand a template?
 1. Add local configuration in the working directory to override settings.
 1. Add an excludes dir to configuration.

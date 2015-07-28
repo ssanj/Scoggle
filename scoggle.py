@@ -38,6 +38,7 @@ class Scoggle:
         for src_dir in src_dirs:
             for root, dirnames, filenames in walker(src_dir):
                 print("filenames: " + str(filenames))
+                #TODO: pass the filter in a function.
                 hits = [os.path.join(root, f) for f in filenames if f.endswith(suffixes)]
                 matched_files.extend(hits)  
         return matched_files              
