@@ -37,7 +37,7 @@ class StatusBar(HowToDisplayErrors):
 
     # append plugin name because there are multiple messages displayed on the status bar    
     def display_message(self, message):
-        HowToDisplayErrors.display_message(" Scoggle: " + message)
+        HowToDisplayErrors.display_message(self, " Scoggle: {0}".format(message))
 
 class DontDisplay(HowToDisplayErrors):
     def __init__(self):                  
