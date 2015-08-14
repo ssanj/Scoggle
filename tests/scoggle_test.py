@@ -1,12 +1,12 @@
 import unittest
-import scoggle
-import scoggle_types as stypes
+import components.scoggle as sc
+import components.scoggle_types as stypes
 import os
 
 class ScoggleTest(unittest.TestCase):
 
   def setUp(self):
-    self.cut = scoggle.Scoggle()
+    self.cut = sc.Scoggle()
 
   def tearDown(self):
     self.cut = None    

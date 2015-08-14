@@ -2,9 +2,7 @@ import os
 import re
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "."))
-
-import scoggle_types as stypes
+from . import scoggle_types as stypes
 
 class Scoggle:
 
@@ -84,7 +82,7 @@ class Scoggle:
             return results   
 
     def make_class_name(self, matcher):
-        module_name = "matchers." + matcher
+        module_name = "Scoggle.matchers." + matcher
         class_name = "".join(matcher.title().split('_'))        
         return module_name + "." + class_name
 

@@ -1,6 +1,6 @@
 import unittest
-import scoggle as sc
-import scoggle_types as stypes
+import components.scoggle as sc
+import components.scoggle_types as stypes
 import matchers.wildcard_prefix_wildcard_suffix_matcher as matcher
 import os
 import functools as fp
