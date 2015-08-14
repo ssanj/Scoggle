@@ -1,5 +1,11 @@
 import sys
 import os
+<<<<<<< HEAD
+=======
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "."))
+
+>>>>>>> 61ad8ec2581e16de49119ab04d58eb02b5deae2a
 import Scoggle.components.scoggle as scoggle
 import Scoggle.components.scoggle_types as stypes
 
