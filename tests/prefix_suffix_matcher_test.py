@@ -1,7 +1,7 @@
 import unittest
-import components.scoggle as sc
-import components.scoggle_types as stypes
-import matchers.prefix_suffix_matcher as matcher
+import Scoggle.components.scoggle as sc
+import Scoggle.components.scoggle_types as stypes
+import Scoggle.matchers.prefix_suffix_matcher as matcher
 import os
 import functools as fp
 

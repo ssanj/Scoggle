@@ -1,6 +1,6 @@
 import unittest
-import components.scoggle as sc
-import components.scoggle_types as stypes
+import Scoggle.components.scoggle as sc
+import Scoggle.components.scoggle_types as stypes
 import os
 
 class ScoggleTest(unittest.TestCase):
