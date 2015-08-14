@@ -3,8 +3,8 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "."))
 
-import scoggle
-import scoggle_types as stypes
+import Scoggle.components.scoggle as scoggle
+import Scoggle.components.scoggle_types as stypes
 
 class WildcardPrefixWildcardSuffixMatcher(stypes.BaseMatcher):
     """
