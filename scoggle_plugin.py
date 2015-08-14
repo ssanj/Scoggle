@@ -6,13 +6,6 @@ import re
 import sys
 import logging
 
-<<<<<<< HEAD
-=======
-#hack to add scoggle as a module to this plugin. Is there a better way?
-#http://stackoverflow.com/questions/15180537/how-to-include-third-party-python-packages-in-sublime-text-2-plugins
-# sys.path.append(os.path.join(os.path.dirname(__file__), "."))
-
->>>>>>> 61ad8ec2581e16de49119ab04d58eb02b5deae2a
 from Scoggle.components import scoggle as scoggle
 from Scoggle.components import sublime_wrapper as sublime_wrapper
 from Scoggle.components import scoggle_types as stypes
