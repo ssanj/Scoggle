@@ -4,6 +4,22 @@
 
 Scoggle is a Sublime Text 3 plugin that will allow you to toggle between production and test code. It will allow you to do this in a number of configurable ways.
 
+## Installation ##
+
+Here are a few ways to install Scoggle on your system.
+
+1. The easiest way to install Scoggle is through [Package Control](https://packagecontrol.io).
+1. Git clone the Scoggle repository into your __Packages__ directory:
+
+    ```git clone git@github.com:ssanj/Scoggle.git```
+
+1. [Download the latest release source code](https://github.com/ssanj/Scoggle/releases) and extract it to the __Packages__ directory.
+
+ > The __Packages__ directory is located at:
+
+ > * OS X: ~/Library/Application Support/Sublime Text 3/Packages
+ > * Linux: ~/.config/sublime-text-3/Packages
+
 ## Configuration ##
 
 Here is the default Scoggle.sublime-settings file:
