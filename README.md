@@ -8,7 +8,7 @@ Scoggle is a Sublime Text 3 plugin that will allow you to toggle between product
 
 Here is the default Scoggle.sublime-settings file:
 
-```{.javascript}
+```javascript
 {
     "production_srcs" :
     [
@@ -42,7 +42,7 @@ The plugin settings file can be overridden on a per-project basis. The configura
 
 Here's a sample .sublime-project file with Scoggle settings:
 
-```{.javascript}
+```javascript
 {
     "folders":
     [
@@ -173,7 +173,7 @@ Given a test file named ABeautifulContrastContextIntSpec.scala in one of the __t
 
 Before we get into how to write your matcher, lets see how the current matchers work. Matcher shortcuts are defined in .sublime-keymap files. Taking the __Prefix Suffix Matcher__ example:
 
-```{.javascript}
+```javascript
 { "keys": ["super+shift+e"], "command": "scoggle", "args": {"matcher": "prefix_suffix_matcher"}, "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]}
 ```
 
@@ -207,18 +207,18 @@ To define your own matcher:
     1. An override of match_prod_file
 1. Add keybindings to your .sublime-keymap file with a matcher argument of your_matcher_name:
 
-```{.javascript}
+```javascript
 { "keys": ["your_shortcuts"], "command": "scoggle", "args": {"matcher": "your_matcher_name"}, "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]},
 ```
 If you want to add it to the command palette, then add an entry in the .sublime-commads file:
 
-```{.javascript}
+```javascript
 { "caption": "Scoggle: Your matcher description", "command": "scoggle", "args": {"matcher": "your_matcher_name"} }
 ```
 
 If you want to add it to the context menu, then add an entry in the Context.sublime-menu file:
 
-```{.javascript}
+```javascript
 {
     "id" : "scoggle",
     "caption" : "Scoggle: Your matcher description",
@@ -229,7 +229,7 @@ If you want to add it to the context menu, then add an entry in the Context.subl
 
 To troubleshoot your matcher, turn on debug logging in your .sublime-settings or .sublime-project:
 
-```{.javascript}
+```javascript
     "log" : true
 ```    
 Open the console with (CTRL + `) to see the debug log.
