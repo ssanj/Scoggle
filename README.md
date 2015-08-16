@@ -99,6 +99,8 @@ The production source filename is used in conjunction with the supplied __test_s
 
 The test source filename is used minus the largest matching __test_suffixes__ to find the matching production sources.
 
+[![Example Prefix Suffix Usage](scoggle_video.jpg)](https://vimeo.com/136418521)
+
 Example:
 
 Given a production file named Contrast.scala in one of the __production_srcs__ paths, __test_suffixes__ of ["Spec.scala", "Suite.scala", "IntSpec.scala"] it will match the following test files in one of the __test_srcs__ paths:
@@ -127,6 +129,8 @@ _notice_ although the __Spec__ suffix would have matched the test filename, we r
 The production source filename is used in conjunction a wildcard and ends with the supplied __test_suffixes__ to find matching test sources.
 
 The test source filename is used minus the largest matching __test_suffixes__ to find a production source that matches the start of the match.
+
+[![Example Prefix Wildcard Suffix Usage](scoggle_video.jpg)](https://vimeo.com/136418522)
 
 Example:
 
@@ -157,6 +161,8 @@ Given a test file named ContrastThrowingAnExceptionSuite.scala in one of the __t
 A wildcard and the production source filename is used in conjunction a wildcard and ends with the supplied __test_suffixes__ to find matching test sources.
 
 The test source filename is used minus the largest matching __test_suffixes__ to find a production source that matches the any part of the match.
+
+[![Example Wildcard Prefix Wildcard Suffix Usage](scoggle_video.jpg)](https://vimeo.com/136418523)
 
 Example:
 
