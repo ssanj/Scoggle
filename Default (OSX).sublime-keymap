@@ -1,11 +1,13 @@
 [
-    { "keys": ["super+shift+e"], "command": "scoggle", "args": {"matcher": "prefix_suffix_matcher"}, 
+    { "keys": ["super+shift+e"], "command": "scoggle", "args": {"matcher": "prefix_suffix_matcher"},
         "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]},
 
-    { "keys": ["super+shift+ctrl+e"], "command": "scoggle", "args": {"matcher": "prefix_wildcard_suffix_matcher"}, 
+    { "keys": ["super+shift+ctrl+e"], "command": "scoggle", "args": {"matcher": "prefix_wildcard_suffix_matcher"},
     "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]},
 
-    { "keys": ["super+shift+ctrl+x"], "command": "scoggle", "args": {"matcher": "wildcard_prefix_wildcard_suffix_matcher"}, 
+    { "keys": ["super+shift+ctrl+x"], "command": "scoggle", "args": {"matcher": "wildcard_prefix_wildcard_suffix_matcher"},
     "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]},
-    
+
+    { "keys": ["super+shift+g"], "command": "package" }
+
 ]
