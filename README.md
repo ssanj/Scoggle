@@ -50,7 +50,7 @@ Here is the default Scoggle.sublime-settings file:
 
 __production_src__ list the production source directories to search through when switching to a production file.
 __test_srcs__ list the test source directories to search through when switching to  test file.
-__test_suffixes__ list the suffixes to search for when switching to a test file. 
+__test_suffixes__ list the suffixes to search for when switching to a test file.
 __log__ specifies whether to turn on debug logging. __display_errors_in__ specifies where to display error messages. By default these are shown in a modal dialog ("dialog") but this can get annoying. To overcome this we have another two options: "status_bar" and "dont_display".
 
 
@@ -109,7 +109,7 @@ Given a production file named Contrast.scala in one of the __production_srcs__ p
 * __Contrast__ _Suite.scala_
 * __Contrast__ _IntSpec.scala_
 
-When toggling from the test source back to the production source, it does the following:    
+When toggling from the test source back to the production source, it does the following:
 
 1. Removes the largest matching suffix from the test filename.
 1. Searches the __production_srcs__ for a filename that matches (1)
@@ -140,7 +140,7 @@ Given a production file named Contrast.scala in one of the __production_srcs__ p
 * __Contrast__ WithinAnotherContext __IntSpec.scala__
 * __Contrast__ ThrowingAnException __Suite.scala__
 
-When toggling from the test source back to the production source, it does the following:    
+When toggling from the test source back to the production source, it does the following:
 
 1. Removes the largest matching suffix from the test filename.
 1. Searches the __production_srcs__ for a filename that matches the start of (1)
@@ -173,7 +173,7 @@ Given a production file named Contrast.scala in one of the __production_srcs__ p
 * Some __Contrast__ Context __Suite.scala__
 * ThisCouldBeAnythingHaving __Contrast__ InItsName __Spec.scala__
 
-When toggling from the test source back to the production source, it does the following:    
+When toggling from the test source back to the production source, it does the following:
 
 1. Removes the largest matching suffix from the test filename.
 1. Breaks down the remain prefix into words by capitalisation. Example: ABeautifulContrastContext is broken down into ["A", "Beautiful", "Contrast", "Context"].
@@ -201,19 +201,19 @@ Before we get into how to write your matcher, lets see how the current matchers 
 
 Notice how the __args__ parameter supplies a __matcher__ argument? The __matcher__ value maps to the matcher to use. The mapping is done like so:
 
-1. Given a matcher of __prefix_suffix_matcher__, look in the __matchers__ module directory for a python file of the same name: prefix_suffix_matcher.py. 
+1. Given a matcher of __prefix_suffix_matcher__, look in the __matchers__ module directory for a python file of the same name: prefix_suffix_matcher.py.
 1. Load the class within that file called PrefixSuffixMatcher. Basically convert snake_case to CamelCase. Each matcher class extends scoggle_types.BaseMatcher and provides the definition for three methods:
 
 * constructor (____init____) - that takes in a scoggle_types.MatcherParam instance.
 * match_test_file - called from a production file when a matching test file needs to be found. Files are supplied from the paths specified in __test_srcs__.
 * match_prod_file - called from a test file when a matching production file needs to be found. Files are supplied from the paths specified in __production_srcs__.
 
-Both of the above methods are supplied a filename and it's associated path. The methods just have to return __True__ to include the file as match or __False__ to exclude it. 
+Both of the above methods are supplied a filename and it's associated path. The methods just have to return __True__ to include the file as match or __False__ to exclude it.
 
 The matcher class is supplied the MatcherParam constructor parameter with the following six fields:
-       
+
 1. root_dir - the first matching directory in the list of production_srcs or test_srcs (Scoggle.sublime-settings) that contains the target file.
-1. test_dirs - the list of test directories defined in test_srcs ((Scoggle.sublime-settings)). 
+1. test_dirs - the list of test directories defined in test_srcs ((Scoggle.sublime-settings)).
 1. prefix - the target file (prod or test) without an extension.
 1. suffixes - the list of test suffixes defined in test_suffixes (Scoggle.sublime-settings).
 1. scoggle - reference to the scoggle module.
@@ -223,7 +223,7 @@ To define your own matcher:
 
 1. Create a matcher python filed named your_matcher_name.py within the __matchers__ module (directory).
 1. Within it define a YourMatcherName class that has the following attributes:
-    1. Extends the scoggle_types.BaseMatcher class 
+    1. Extends the scoggle_types.BaseMatcher class
     1. A constructor that takes in a MatcherParam
     1. An override of match_test_file
     1. An override of match_prod_file
@@ -247,13 +247,27 @@ If you want to add it to the context menu, then add an entry in the Context.subl
     "command" : "scoggle",
     "args": {"matcher": "your_matcher_name"}
 }
-```   
+```
 
 To troubleshoot your matcher, turn on debug logging in your .sublime-settings or .sublime-project:
 
 ```javascript
     "log" : true
-```    
+```
 Open the console with (CTRL + `) to see the debug log.
 
 In addition have a look at the existing matchers to get an idea of how everything hangs together.
+
+## Additional Functionality ##
+
+### Insert package ###
+
+[__CMD + SHIFT + G__]
+
+Inserts the package declaration at the top of a scala file.
+
+```scala
+package your.awesome.packagename
+
+```
+

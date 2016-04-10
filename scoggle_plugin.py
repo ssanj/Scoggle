@@ -22,10 +22,7 @@ class ScoggleCommand(sublime_plugin.TextCommand):
         self.perform()
 
     def is_visible(self):
-        if (self.view and  self.view.settings()and self.view.settings().has("syntax")):
-            return self.view.settings().get('syntax').endswith("Scala.sublime-syntax")
-        else:
-            return False
+        return scoggle.Scoggle.is_visible(self.view, sublime.version())
 
     def perform(self):
         current_file = self.wrapper.current_file(self.view)
@@ -118,10 +115,7 @@ class PackageCommand(sublime_plugin.TextCommand):
         self.perform(edit)
 
     def is_visible(self):
-        if (self.view and  self.view.settings() and self.view.settings().has("syntax")):
-            return self.view.settings().get('syntax').endswith("Scala.sublime-syntax")
-        else:
-            return False
+        return scoggle.Scoggle.is_visible(self.view, sublime.version())
 
     def perform(self, edit):
         current_file = self.wrapper.current_file(self.view)

@@ -34,27 +34,52 @@ class Scoggle:
         fullpath_srcs = self.prepend_root_dir_to_paths(root_dir, paths)
         for p in fullpath_srcs:
             if current_file.startswith(p):
-                return os.path.split(current_file)[0][len(p):][1:].replace("/", ".")
+                return os.path.split(current_file)[0][len(p):][1:].replace(os.sep, ".")
 
         raise sypes.CantDeterminePackageError(current_file, paths)
 
     def get_updated_package_text(self, content, dotted):
+        """
+            content - the content of the source file.
+            dotted - the dotted package path.
+            This function tries to maintain 2 newlines between the package
+            declaration first line of code.
+            Example:
+             returns the default package dotted with 2 new lines for:
+                 - empty source file
+                 - source file with one newline
+                 - source file with two newlines
+             squashes a newline if:
+                - first two lines are newlines
+             adds a new line if:
+                - first line is a newline but the second isn't
+            adds two newlines if:
+               - none of the first two lines are newlines
+        """
         newline = os.linesep
         defaultContent = newline.join([("package " + dotted), "", ""])
         if (content is None):
             return defaultContent
 
         lines = content.split(newline)
-        if (len(lines) == 0):
+        print(str(lines))
+        #an empty file or a file with one newline
+        if (len(lines) == 0 or
+            (len(lines) == 1 and len(lines[0]) == 0) or
+            (len(lines) == 2 and (len(lines[0]) == 0 and len(lines[1]) == 0))):
             return defaultContent
+        #files with more than one line that don't have a package
         elif (not(lines[0].startswith("package"))):
-            if (len(lines) == 1 and len(lines[0]) == 0):
-                return defaultContent
-            elif (len(lines[0]) == 0):
+            if (len(lines[0]) == 0 and len(lines[1]) == 0):
+                #the first line is a newline
                 return newline.join([("package " + dotted)] + lines[1:])
+            elif (len(lines[0]) == 0 and len(lines[1]) != 0):
+                return newline.join([("package " + dotted)] + lines)
             else:
+                #the first line is not a newline
                 return newline.join([("package " + dotted), ""] + lines)
         else:
+            #already has a package
             return newline.join(lines)
 
     def prepend_prefix_to_suffixes(self, prefix, suffixes):
@@ -148,3 +173,14 @@ class Scoggle:
 
     def display_error_in(self, message, location):
         location.display_message(message)
+
+    @staticmethod
+    def is_visible(view, version):
+        if (view and  view.settings() and view.settings().has("syntax")):
+            syntax = view.settings().get('syntax')
+            if (int(version) <= 3083):
+                return syntax.endswith("Scala.tmLanguage")
+            else:
+                return syntax.endswith("Scala.sublime-syntax")
+        else:
+            return False
