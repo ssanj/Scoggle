@@ -62,7 +62,6 @@ class Scoggle:
             return defaultContent
 
         lines = content.split(newline)
-        print(str(lines))
         #an empty file or a file with one newline
         if (len(lines) == 0 or
             (len(lines) == 1 and len(lines[0]) == 0) or
