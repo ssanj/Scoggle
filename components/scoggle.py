@@ -56,7 +56,12 @@ class Scoggle:
             adds two newlines if:
                - none of the first two lines are newlines
         """
-        newline = os.linesep
+        #sublime seems to use '\n' as a line separator for windows as well.
+        #Not sure why? It should be '\r\n'. If you use '\r\n', sublime interprets
+        #it as two lines. Go figure.
+        #os.linesep works for linux and mac but not windows.
+        #Hard-coding to '\n' as it seems to work across all operation systems.
+        newline = '\n'
         defaultContent = newline.join([("package " + dotted), "", ""])
         if (content is None):
             return defaultContent
