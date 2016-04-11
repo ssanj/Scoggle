@@ -264,7 +264,7 @@ In addition have a look at the existing matchers to get an idea of how everythin
 
 [__CMD + SHIFT + G__]
 
-Inserts the package declaration at the top of a scala file.
+Inserts the package declaration at the top of a scala file. The package of the current file is derived from the production_srcs or test_srcs paths depending on which the file is on.
 
 ```scala
 package your.awesome.packagename
