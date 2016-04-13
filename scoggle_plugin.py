@@ -141,11 +141,14 @@ class PackageCommand(sublime_plugin.TextCommand):
             self.update_package_for(edit, current_file, test_srcs)
         else:
             if current_file is not None:
-                error = ("Could not find package for %(current_file) in %(prod_srcs)s or %(test_srcs)s. Please update *.sublime-project or Scoggle.sublime-settings."  % locals())
+                errorD = ("Could not derive package for %(current_file)s"  % locals())
+                errorL = ("Could not derive package for %(current_file)s from %(prod_srcs)s or %(test_srcs)s. Please update *.sublime-project or Scoggle.sublime-settings."  % locals())
             else:
-                error = ("Please save the buffer as a scala file before requesting a package.")
-            self.logger.error(error)
-            self.scoggle.display_error_in(error, display_error_location)
+                errorD = ("Please save the buffer as a scala file before inserting a package.")
+                errorL = ("Packages can only be derived from scala files that have a name and path. Please save the file and try again.")
+
+            self.logger.error(errorL)
+            self.scoggle.display_error_in(errorD, display_error_location)
 
     def is_production_file(self, current_file, prod_srcs):
         if current_file is not None:
