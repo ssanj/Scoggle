@@ -271,3 +271,4 @@ package your.awesome.packagename
 
 ```
 
+![Inserting a package through Scoggle](scoggle_sublime_text_plugin_insert_package.gif)
