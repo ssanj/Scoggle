@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ssanj/Scoggle.svg?branch=strategies)](https://travis-ci.org/ssanj/Scoggle)
+[![Build Status](https://travis-ci.org/ssanj/Scoggle.svg?branch=master)](https://travis-ci.org/ssanj/Scoggle)
 
 # Scoggle #
 
