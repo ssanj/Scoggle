@@ -8,6 +8,8 @@
     { "keys": ["super+shift+ctrl+x"], "command": "scoggle", "args": {"matcher": "wildcard_prefix_wildcard_suffix_matcher"},
     "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]},
 
-    { "keys": ["super+shift+g"], "command": "package" }
+    { "keys": ["super+shift+g"], "command": "package", "args" : {"style" : "full"} },
+
+    { "keys": ["super+shift+h"], "command": "package", "args" : {"style" : "step"} }
 
 ]
