@@ -131,6 +131,31 @@ class ScoggleTest(unittest.TestCase):
     expected = dotted + content
     self.assertEqual(self.cut.get_updated_package_text(content, dotted), expected)
 
+  #already_has_package
+  def test_already_has_package_without_package_line(self):
+    self.assertEqual(self.cut.already_has_package(None), False)
+    self.assertEqual(self.cut.already_has_package(""), False)
+    self.assertEqual(self.cut.already_has_package("line without newline"), False)
+
+  def test_already_has_package_with_package_line(self):
+    self.assertEqual(self.cut.already_has_package("package blah.de.blee"), True)
+    self.assertEqual(self.cut.already_has_package("package blah.de.blah\n"), True)
+    self.assertEqual(self.cut.already_has_package("package net.ssanj.test\n\nimport scala.util.Random"), True)
+
+  #get_package_steps
+  def test_get_package_steps_with_sub_package(self):
+      full = "net.ssanj.dabble.dsl.property"
+      sub  = "net.ssanj.dabble"
+      self.assertEqual(self.cut.get_package_steps(full, sub), "package net.ssanj.dabble\npackage dsl\npackage property")
+
+  def test_get_package_steps_with_sub_package_ending_with_dot(self):
+      full = "net.ssanj.dabble.dsl.property"
+      sub  = "net.ssanj.dabble."
+      self.assertEqual(self.cut.get_package_steps(full, sub), "package net.ssanj.dabble\npackage dsl\npackage property")
+
+  def test_get_package_steps_without_sub_package(self):
+      self.assertEqual(self.cut.get_package_steps("net.ssanj.dabble", "dabble.ssanj.net"), None)
+      self.assertEqual(self.cut.get_package_steps("net.ssanj.dabble", "net.ssanj.dabble"), None)
 
   # prepend_prefix_to_suffixes
 
