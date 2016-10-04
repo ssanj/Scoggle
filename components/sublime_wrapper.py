@@ -14,7 +14,13 @@ class SublimeWrapper:
         location.display_message(message)
 
     def show_status_message(self, message):
-        sublime.status_message(message)    
+        sublime.status_message(message)
+
+    def getActiveWindow(self):
+        return sublime.active_window()
+
+    def show_input_panel(self, caption, text, on_done, on_change, on_cancel):
+        sublime.active_window().show_input_panel(caption, text, on_done, on_change, on_cancel)
 
     def show_results_list_with_location(self, matches, display_location):
         if (len(matches) == 0):

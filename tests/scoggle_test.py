@@ -87,54 +87,75 @@ class ScoggleTest(unittest.TestCase):
   # get_updated_package_text
 
   def test_get_updated_package_text_new_file(self):
-    newline = os.linesep
-    expected = "package one.two.three" + newline + newline
+    newline  = os.linesep
+    expected = "one.two.three" + newline + newline
     self.assertEqual(self.cut.get_updated_package_text("", "one.two.three"), expected)
     self.assertEqual(self.cut.get_updated_package_text(None, "one.two.three"), expected)
 
   def test_get_updated_package_text_file_with_newline_only(self):
     newline = os.linesep
-    self.assertEqual(self.cut.get_updated_package_text(newline, "one.two.three"), "package one.two.three" + newline + newline)
+    self.assertEqual(self.cut.get_updated_package_text(newline, "one.two.three"), "one.two.three" + newline + newline)
 
   def test_get_updated_package_text_existing_file_without_package(self):
-    newline = os.linesep
-    dotted = "one.two.three"
-    content = "import scala.concurrent.Future"
-    package = "package " + dotted
-    expected = package + newline + newline + content
+    newline  = os.linesep
+    dotted   = "one.two.three"
+    content  = "import scala.concurrent.Future"
+    expected = dotted + newline + newline + content
     self.assertEqual(self.cut.get_updated_package_text(content, dotted), expected)
 
   def test_get_updated_package_text_existing_file_without_package_with_empty_first_line(self):
-    newline = os.linesep
-    dotted = "one.two.three"
-    content = newline + "import scala.concurrent.Future"
-    package = "package " + dotted
-    expected = package + newline + content
+    newline  = os.linesep
+    dotted   = "one.two.three"
+    content  = newline + "import scala.concurrent.Future"
+    expected = dotted + newline + content
     self.assertEqual(self.cut.get_updated_package_text(content, dotted), expected)
 
   def test_get_updated_package_text_existing_file_without_package_with_empty_first_two_lines(self):
     newline = os.linesep
     dotted = "one.two.three"
     content = newline + newline
-    package = "package " + dotted
-    expected = package + content
+    expected = dotted + content
     self.assertEqual(self.cut.get_updated_package_text(content, dotted), expected)
 
   def test_get_updated_package_text_existing_file_with_package(self):
-    newline = os.linesep
-    dotted = "one.two.three"
-    content = "package " + dotted + newline + "import scala.concurrent.ExecutionContext"
+    newline  = os.linesep
+    dotted   = "one.two.three"
+    content  = "package " + dotted + newline + "import scala.concurrent.ExecutionContext"
     expected = content
     self.assertEqual(self.cut.get_updated_package_text(content, dotted), expected)
 
   def test_get_updated_package_text_existing_file_without_package_and_two_empty_lines(self):
-    newline = os.linesep
-    dotted = "one.two.three"
-    package = "package " + dotted
-    content = newline + newline + "import scala.concurrent.ExecutionContext"
-    expected = package + content
+    newline  = os.linesep
+    dotted   = "one.two.three"
+    content  = newline + newline + "import scala.concurrent.ExecutionContext"
+    expected = dotted + content
     self.assertEqual(self.cut.get_updated_package_text(content, dotted), expected)
 
+  #already_has_package
+  def test_already_has_package_without_package_line(self):
+    self.assertEqual(self.cut.already_has_package(None), False)
+    self.assertEqual(self.cut.already_has_package(""), False)
+    self.assertEqual(self.cut.already_has_package("line without newline"), False)
+
+  def test_already_has_package_with_package_line(self):
+    self.assertEqual(self.cut.already_has_package("package blah.de.blee"), True)
+    self.assertEqual(self.cut.already_has_package("package blah.de.blah\n"), True)
+    self.assertEqual(self.cut.already_has_package("package net.ssanj.test\n\nimport scala.util.Random"), True)
+
+  #get_package_steps
+  def test_get_package_steps_with_sub_package(self):
+      full = "net.ssanj.dabble.dsl.property"
+      sub  = "net.ssanj.dabble"
+      self.assertEqual(self.cut.get_package_steps(full, sub), "package net.ssanj.dabble\npackage dsl\npackage property")
+
+  def test_get_package_steps_with_sub_package_ending_with_dot(self):
+      full = "net.ssanj.dabble.dsl.property"
+      sub  = "net.ssanj.dabble."
+      self.assertEqual(self.cut.get_package_steps(full, sub), "package net.ssanj.dabble\npackage dsl\npackage property")
+
+  def test_get_package_steps_without_sub_package(self):
+      self.assertEqual(self.cut.get_package_steps("net.ssanj.dabble", "dabble.ssanj.net"), None)
+      self.assertEqual(self.cut.get_package_steps("net.ssanj.dabble", "net.ssanj.dabble"), None)
 
   # prepend_prefix_to_suffixes
 

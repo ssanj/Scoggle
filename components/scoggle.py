@@ -38,6 +38,14 @@ class Scoggle:
 
         raise sypes.CantDeterminePackageError(current_file, paths)
 
+    def already_has_package(self, content):
+        if (content is None):
+            return False
+        else:
+            newline = "\n"
+            lines = content.split(newline)
+            return len(lines) > 0 and lines[0].startswith("package")
+
     def get_updated_package_text(self, content, dotted):
         """
             content - the content of the source file.
@@ -62,7 +70,7 @@ class Scoggle:
         #os.linesep works for linux and mac but not windows.
         #Hard-coding to '\n' as it seems to work across all operation systems.
         newline = '\n'
-        defaultContent = newline.join([("package " + dotted), "", ""])
+        defaultContent = newline.join([dotted, "", ""])
         if (content is None):
             return defaultContent
 
@@ -76,12 +84,12 @@ class Scoggle:
         elif (not(lines[0].startswith("package"))):
             if (len(lines[0]) == 0 and len(lines[1]) == 0):
                 #the first line is a newline
-                return newline.join([("package " + dotted)] + lines[1:])
+                return newline.join([dotted] + lines[1:])
             elif (len(lines[0]) == 0 and len(lines[1]) != 0):
-                return newline.join([("package " + dotted)] + lines)
+                return newline.join([dotted] + lines)
             else:
                 #the first line is not a newline
-                return newline.join([("package " + dotted), ""] + lines)
+                return newline.join([dotted, ""] + lines)
         else:
             #already has a package
             return newline.join(lines)
@@ -177,6 +185,19 @@ class Scoggle:
 
     def display_error_in(self, message, location):
         location.display_message(message)
+
+    def get_package_steps(self, full, sub):
+        if (not(sub.endswith("."))):
+            sub  += "."
+
+        if (full.startswith(sub)):
+            other = full.replace(sub, "")
+            parts = [sub[:-1]] + other.split(".")
+            newline = "\n"
+            return newline.join(list(map(lambda p: "package " + p, parts)))
+        else:
+            # the sub package requested is not a valid prefix of the full package.
+            return None
 
     @staticmethod
     def is_visible(view, version):

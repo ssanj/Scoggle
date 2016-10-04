@@ -104,13 +104,19 @@ class ScoggleCommand(sublime_plugin.TextCommand):
     def is_test_file(self, current_file, test_srcs):
         return self.scoggle.does_file_contain_path(current_file, test_srcs)
 
+class ReplaceContentCommand(sublime_plugin.TextCommand):
+    def run(self, edit, content):
+        region = sublime.Region(0, self.view.size())
+        self.view.replace(edit, region, content)
+
 class PackageCommand(sublime_plugin.TextCommand):
 
-    def run(self, edit):
+    def run(self, edit, **args):
         self.scoggle = scoggle.Scoggle()
         self.wrapper = sublime_wrapper.SublimeWrapper()
         FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         logging.basicConfig(format=FORMAT)
+        self.style = args["style"]
         self.logger = logging.getLogger('scoggle.plugin')
         self.perform(edit)
 
@@ -135,6 +141,7 @@ class PackageCommand(sublime_plugin.TextCommand):
         else:
             self.logger.setLevel(logging.ERROR)
 
+        self.logger.error("style = " + self.style)
         if (self.is_production_file(current_file, prod_srcs)):
             self.update_package_for(edit, current_file, prod_srcs)
         elif (self.is_test_file(current_file, test_srcs)):
@@ -164,8 +171,26 @@ class PackageCommand(sublime_plugin.TextCommand):
 
     def update_package_for(self, edit, current_file, paths):
         dotted = self.scoggle.get_package_path(current_file, paths)
-        updated_text = self.scoggle.get_updated_package_text(self.get_all_content(), dotted)
-        self.update_view_text(edit, updated_text)
+        if (self.style == "step"):
+            # TODO: check for a package line in content
+            if (not(self.scoggle.already_has_package(self.get_all_content()))):
+                self.wrapper.show_input_panel("Select fold", dotted, self.sub_package_selection(dotted), None, None)
+        else:
+            updated_text = self.scoggle.get_updated_package_text(self.get_all_content(), "package " + dotted)
+            self.update_view_text(edit, updated_text)
+
+    def sub_package_selection(self, full):
+        def handle_selection(sub):
+            steps = self.scoggle.get_package_steps(full, sub)
+            if (steps is not None):
+                updated_text = self.scoggle.get_updated_package_text(self.get_all_content(), steps)
+                #we have to use another command here to update our content because our edit
+                #object is spent after on_done in sub_package_selection returns
+                active_view = self.wrapper.getActiveWindow()
+                if active_view:
+                    active_view.run_command("replace_content", {"content": updated_text})
+
+        return handle_selection
 
     def get_all_content(self):
         region = sublime.Region(0, self.view.size())
