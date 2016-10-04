@@ -87,52 +87,48 @@ class ScoggleTest(unittest.TestCase):
   # get_updated_package_text
 
   def test_get_updated_package_text_new_file(self):
-    newline = os.linesep
-    expected = "package one.two.three" + newline + newline
+    newline  = os.linesep
+    expected = "one.two.three" + newline + newline
     self.assertEqual(self.cut.get_updated_package_text("", "one.two.three"), expected)
     self.assertEqual(self.cut.get_updated_package_text(None, "one.two.three"), expected)
 
   def test_get_updated_package_text_file_with_newline_only(self):
     newline = os.linesep
-    self.assertEqual(self.cut.get_updated_package_text(newline, "one.two.three"), "package one.two.three" + newline + newline)
+    self.assertEqual(self.cut.get_updated_package_text(newline, "one.two.three"), "one.two.three" + newline + newline)
 
   def test_get_updated_package_text_existing_file_without_package(self):
-    newline = os.linesep
-    dotted = "one.two.three"
-    content = "import scala.concurrent.Future"
-    package = "package " + dotted
-    expected = package + newline + newline + content
+    newline  = os.linesep
+    dotted   = "one.two.three"
+    content  = "import scala.concurrent.Future"
+    expected = dotted + newline + newline + content
     self.assertEqual(self.cut.get_updated_package_text(content, dotted), expected)
 
   def test_get_updated_package_text_existing_file_without_package_with_empty_first_line(self):
-    newline = os.linesep
-    dotted = "one.two.three"
-    content = newline + "import scala.concurrent.Future"
-    package = "package " + dotted
-    expected = package + newline + content
+    newline  = os.linesep
+    dotted   = "one.two.three"
+    content  = newline + "import scala.concurrent.Future"
+    expected = dotted + newline + content
     self.assertEqual(self.cut.get_updated_package_text(content, dotted), expected)
 
   def test_get_updated_package_text_existing_file_without_package_with_empty_first_two_lines(self):
     newline = os.linesep
     dotted = "one.two.three"
     content = newline + newline
-    package = "package " + dotted
-    expected = package + content
+    expected = dotted + content
     self.assertEqual(self.cut.get_updated_package_text(content, dotted), expected)
 
   def test_get_updated_package_text_existing_file_with_package(self):
-    newline = os.linesep
-    dotted = "one.two.three"
-    content = "package " + dotted + newline + "import scala.concurrent.ExecutionContext"
+    newline  = os.linesep
+    dotted   = "one.two.three"
+    content  = "package " + dotted + newline + "import scala.concurrent.ExecutionContext"
     expected = content
     self.assertEqual(self.cut.get_updated_package_text(content, dotted), expected)
 
   def test_get_updated_package_text_existing_file_without_package_and_two_empty_lines(self):
-    newline = os.linesep
-    dotted = "one.two.three"
-    package = "package " + dotted
-    content = newline + newline + "import scala.concurrent.ExecutionContext"
-    expected = package + content
+    newline  = os.linesep
+    dotted   = "one.two.three"
+    content  = newline + newline + "import scala.concurrent.ExecutionContext"
+    expected = dotted + content
     self.assertEqual(self.cut.get_updated_package_text(content, dotted), expected)
 
 
