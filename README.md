@@ -272,3 +272,33 @@ package your.awesome.packagename
 ```
 
 ![Inserting a package through Scoggle](scoggle_sublime_text_plugin_insert_package.gif)
+
+### Collapse package ###
+
+[__CMD + SHIFT + H__]
+
+Collapses the package declaration of the current file into sub packages, when given a prefix. The packages are inserted at the top of a scala file. The package of the current file is derived from the production_srcs or test_srcs paths depending on which the file is on.
+
+Given a package of:
+```scala
+your.awesome.packagename.project.feature
+
+```
+
+and a prefix of:
+
+```scala
+your.awesome.packagename
+```
+
+inserts:
+
+```scala
+package your.awesome.packagename
+package project
+package feature
+
+```
+
+![Collapsing a package through Scoggle](scoggle_sublime_text_plugin_collapse_package.gif)
+
