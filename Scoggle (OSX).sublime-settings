@@ -1,0 +1,22 @@
+{
+    "production_srcs" :
+    [
+        "/src/main/scala"
+    ],
+    "test_srcs" :
+    [
+        "/src/test/scala",
+        "/src/it/scala"
+    ],
+    "test_suffixes" :
+    [
+        "Spec.scala",
+        "IntSpec.scala",
+        "Suite.scala",
+        "Test.scala",
+        "Specification.scala"
+    ],
+    "log" : false,
+    "file_ext" : ".scala",
+    "display_errors_in" : "dialog" // one of ("dialog", "status_bar", "dont_display")
+}
