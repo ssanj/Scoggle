@@ -87,6 +87,8 @@ Here's a sample .sublime-project file with Scoggle settings:
 
 _Gotcha: remember that project settings are only active when you open the source directory as a Project not through File > Open._
 
+_When customising settings for Windows, remember to replace forward slashes with double backslashes._
+
 ## Matching Strategies ##
 
 Scoggle comes bundled with a three main matching strategies. You can also write your own matcher quite easily. The bundled matchers go from very specific matches to more fuzzy matches.
