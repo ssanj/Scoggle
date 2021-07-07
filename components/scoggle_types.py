@@ -6,6 +6,11 @@ class SearchType(): pass
 class PROD(SearchType): pass
 class TEST(SearchType): pass
 
+class YesNoCancel(): pass
+class Yes(YesNoCancel): pass
+class No(YesNoCancel): pass
+class Cancel(YesNoCancel): pass
+
 class HowToDisplayErrors():
     """
         Takes a partial function that takes a message of type String and displays that message

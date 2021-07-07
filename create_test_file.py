@@ -69,16 +69,17 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
         else:
              self.logger.error("Could not find active view")
 
+
     def handle_test_file_creation(self, view, root_dir, package_path, test_srcs):
         region_string = view.sel()[0] #get the first selection region
         if region_string:
             selected_text = view.substr(region_string)
-            print("you selected", str(selected_text))
+            self.logger.debug("you selected {0}".format(str(selected_text)))
             heading = "Create test file for: {0}".format(selected_text)
             result = self.wrapper.yes_no_cancel_dialog(heading, "Yes", "No")
-            print("got result ====> ", result)
+            self.logger.debug("User chose Y(1)|N(2)|Cancel(3) ====> ", result)
             selected_file_name = os.path.splitext(selected_text)[0] # get file name without the ext
-            if result == 1: #Yes
+            if isinstance(result, stypes.Yes):
                  param = stypes.TestFileCreationParam(root_dir, package_path, test_srcs, selected_file_name)
                  self.window.show_quick_panel(test_srcs, self.file_selected(param), placeholder="select test source directory")
             else:

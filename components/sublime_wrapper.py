@@ -2,6 +2,8 @@ import sublime
 import sublime_plugin
 import os
 
+from . import scoggle_types as stypes
+
 class SublimeWrapper:
 
     def current_file(self, view):
@@ -14,7 +16,9 @@ class SublimeWrapper:
         location.display_message(message)
 
     def yes_no_cancel_dialog(self, heading, yesString, noString):
-        return sublime.yes_no_cancel_dialog(heading, yesString, noString)
+        sublimeResult = sublime.yes_no_cancel_dialog(heading, yesString, noString)
+        result = stypes.Yes() if sublimeResult == 1 else stypes.No() if sublimeResult == 2 else stypes.Cancel()
+        return result
 
     def show_status_message(self, message):
         sublime.status_message(message)
