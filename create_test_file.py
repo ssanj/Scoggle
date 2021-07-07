@@ -16,9 +16,12 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         self.scoggle = scoggle.Scoggle()
         self.wrapper = sublime_wrapper.SublimeWrapper()
+
+        # TODO: Create a log wrapper
         FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         logging.basicConfig(format=FORMAT)
         self.logger = logging.getLogger('scoggle.plugin')
+
         view = self.view
         self.window = self.wrapper.getActiveWindow()
 
@@ -33,29 +36,39 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
                 prod_srcs = self.wrapper.get_setting("production_srcs", project_settings_dict, settings)
                 file_ext = self.wrapper.get_setting("file_ext", project_settings_dict, settings)
 
-                ## TODO: Fixed for now, but identify which production source you are in later
-                # selected_prod_src = prod_srcs[0]
-
                 root_dir, selected_prod_src = self.scoggle.get_first_root_path_pair_or_error(current_file, prod_srcs)
                 source_dir_minus_package = os.path.join(root_dir, selected_prod_src)
-                ## TODO: check for at least 3 elements
-                package_path_and_file_ext = current_file.partition(str(source_dir_minus_package))[2]
-                package_path = os.path.split(package_path_and_file_ext)[0]
 
-                region_string = view.sel()[0]
-                if region_string:
-                    selected_text = view.substr(region_string)
-                    print("you selected", str(selected_text))
-                    heading = ("Create test file for: %(selected_text)s" % locals())
-                    result = sublime.yes_no_cancel_dialog(heading, "Yes", "No")
-                    print("got result ====> ", result)
-                    selected_file_name = os.path.splitext(selected_text)[0]
-                    if result == 1: #Yes
-                        # root_dir, package_dir, file_name
-                         param = stypes.TestFileCreationParam(root_dir, package_path, test_srcs, selected_file_name)
-                         self.window.show_quick_panel(test_srcs, self.file_selected(param), placeholder="select test source directory")
+                ## TODO: check for at least 3 elements
+                path_pieces = current_file.partition(str(source_dir_minus_package))
+                # the partition should return 3 pieces:
+                # 0 -> The String before the of source_dir_minus_package
+                # 1 -> The match: source_dir_minus_package
+                # 2 -> The String following the match (package path + file name + ext)
+                if len(path_pieces) >= 3:
+                    package_path_and_file_ext = path_pieces[2] #get the package path + file name + ext
+                    package_path = os.path.split(package_path_and_file_ext)[0] #get the package path
+
+                    region_string = view.sel()[0] #get the first selection region
+                    if region_string:
+                        selected_text = view.substr(region_string)
+                        print("you selected", str(selected_text))
+                        heading = "Create test file for: {0}".format(selected_text)
+                        result = self.wrapper.yes_no_cancel_dialog(heading, "Yes", "No")
+                        print("got result ====> ", result)
+                        selected_file_name = os.path.splitext(selected_text)[0] # get file name without the ext
+                        if result == 1: #Yes
+                             param = stypes.TestFileCreationParam(root_dir, package_path, test_srcs, selected_file_name)
+                             self.window.show_quick_panel(test_srcs, self.file_selected(param), placeholder="select test source directory")
+                        else:
+                            pass
+                            # No or Cancel
+                    else:
+                        # TODO: We should probably just use the file name here.
+                        print("invalid selection")
                 else:
-                    print("invalid selection")
+                    self.logger.error("Could not split source_dir_minus_package into 3: {0}".format(str(path_pieces)))
+
             except stypes.CantFindRootPathError as cfrpe:
                 self.logger.error(cfrpe.cause)
                 self.wrapper.show_error_message_with_location(cfrpe.cause, display_error_location)

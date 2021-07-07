@@ -13,6 +13,9 @@ class SublimeWrapper:
     def show_error_message_with_location(self, message, location):
         location.display_message(message)
 
+    def yes_no_cancel_dialog(self, heading, yesString, noString):
+        return sublime.yes_no_cancel_dialog(heading, yesString, noString)
+
     def show_status_message(self, message):
         sublime.status_message(message)
 
