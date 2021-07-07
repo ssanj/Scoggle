@@ -93,6 +93,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
         def handle_test_src_path_selected(selected_index):
             if selected_index != -1:
                  self.logger.debug("file_selected params: {0}".format(str(params)))
+                 # TODO: Do this in another class
                  test_src_path = params.test_srcs[selected_index] # test source path selected by user
                  root_test_src_path = os.path.join(params.root_dir, test_src_path.lstrip(os.path.sep)) # strip starting path separators
                  root_test_src_path_package = os.path.join(root_test_src_path, params.package_dir.lstrip(os.path.sep)) # strip starting path separators
