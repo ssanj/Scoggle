@@ -26,6 +26,13 @@ class Scoggle:
 
         raise stypes.CantFindRootPathError(file, paths)
 
+    def get_first_root_path_pair_or_error(self, file, paths):
+        for p in paths:
+            if file.find(p) != -1:
+                return (file.partition(p)[0], p)
+
+        raise stypes.CantFindRootPathError(file, paths)
+
     def get_path_minus_file(self, current_file):
         return os.path.split(current_file)[0]
 
