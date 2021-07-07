@@ -35,6 +35,16 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
                 test_srcs = self.wrapper.get_setting("test_srcs", project_settings_dict, settings)
                 prod_srcs = self.wrapper.get_setting("production_srcs", project_settings_dict, settings)
                 file_ext = self.wrapper.get_setting("file_ext", project_settings_dict, settings)
+                should_log = self.wrapper.get_setting("log", project_settings_dict, settings)
+                display_error_location = self.scoggle.get_display_error_location(
+                    self.wrapper.get_setting("display_errors_in", project_settings_dict, settings),
+                    self.wrapper.show_error_message,
+                    self.wrapper.show_status_message)
+
+                if (should_log):
+                    self.logger.setLevel(logging.DEBUG)
+                else:
+                    self.logger.setLevel(logging.ERROR)
 
                 root_dir, selected_prod_src = self.scoggle.get_first_root_path_pair_or_error(current_file, prod_srcs)
                 source_dir_minus_package = os.path.join(root_dir, selected_prod_src)
@@ -49,23 +59,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
                     package_path_and_file_ext = path_pieces[2] #get the package path + file name + ext
                     package_path = os.path.split(package_path_and_file_ext)[0] #get the package path
 
-                    region_string = view.sel()[0] #get the first selection region
-                    if region_string:
-                        selected_text = view.substr(region_string)
-                        print("you selected", str(selected_text))
-                        heading = "Create test file for: {0}".format(selected_text)
-                        result = self.wrapper.yes_no_cancel_dialog(heading, "Yes", "No")
-                        print("got result ====> ", result)
-                        selected_file_name = os.path.splitext(selected_text)[0] # get file name without the ext
-                        if result == 1: #Yes
-                             param = stypes.TestFileCreationParam(root_dir, package_path, test_srcs, selected_file_name)
-                             self.window.show_quick_panel(test_srcs, self.file_selected(param), placeholder="select test source directory")
-                        else:
-                            pass
-                            # No or Cancel
-                    else:
-                        # TODO: We should probably just use the file name here.
-                        print("invalid selection")
+                    self.handle_test_file_creation(view, root_dir, package_path, test_srcs)
                 else:
                     self.logger.error("Could not split source_dir_minus_package into 3: {0}".format(str(path_pieces)))
 
@@ -73,8 +67,26 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
                 self.logger.error(cfrpe.cause)
                 self.wrapper.show_error_message_with_location(cfrpe.cause, display_error_location)
         else:
-            print("no active view")
+             self.logger.error("Could not find active view")
 
+    def handle_test_file_creation(self, view, root_dir, package_path, test_srcs):
+        region_string = view.sel()[0] #get the first selection region
+        if region_string:
+            selected_text = view.substr(region_string)
+            print("you selected", str(selected_text))
+            heading = "Create test file for: {0}".format(selected_text)
+            result = self.wrapper.yes_no_cancel_dialog(heading, "Yes", "No")
+            print("got result ====> ", result)
+            selected_file_name = os.path.splitext(selected_text)[0] # get file name without the ext
+            if result == 1: #Yes
+                 param = stypes.TestFileCreationParam(root_dir, package_path, test_srcs, selected_file_name)
+                 self.window.show_quick_panel(test_srcs, self.file_selected(param), placeholder="select test source directory")
+            else:
+                pass
+                # No or Cancel
+        else:
+            # TODO: We should probably just use the file name here.
+            print("invalid selection")
 
     def file_selected(self, params):
         def handle_selection(selected_index):
