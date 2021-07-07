@@ -120,3 +120,29 @@ class CantDeterminePackageError(Exception):
 
     def __str__(self):
         return repr(self.cause)
+
+
+class TestFileCreationParam():
+    """
+        All the bits and pieces required to create a test file from a production file.
+        root_dir - the first directory in the list of production_srcs (Scoggle.sublime-settings) that contains the current file.
+        package_dir - the package path to the chosen test file without the root path
+        test_srcs - the list of test source directories
+        file_name - the prefix for the test file
+    """
+    def __init__(self, root_dir, package_dir, test_srcs, file_name):
+        self.root_dir = root_dir
+        self.package_dir = package_dir
+        self.test_srcs = test_srcs
+        self.file_name = file_name
+
+    def __str__(self):
+        to_string = (
+            "TestFileCreationParam(" +
+                "root_dir=" + str(self.root_dir) +
+                ", package_dir=" + str(self.package_dir) +
+                ", test_srcs=" + str(self.test_srcs) +
+                ", file_name=" + str(self.file_name) +
+             ")"
+        )
+        return repr(to_string)
