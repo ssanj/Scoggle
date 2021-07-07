@@ -151,3 +151,38 @@ class TestFileCreationParam():
              ")"
         )
         return repr(to_string)
+
+class ScoggleConfig():
+
+    def __init__(self, view, sublimeWrapper, scoggle):
+        import logging
+        # TODO: Create a log wrapper
+        FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        logging.basicConfig(format=FORMAT)
+        self.logger = logging.getLogger('scoggle.plugin')
+
+        settings = sublimeWrapper.load_settings("Scoggle")
+        project_settings_dict = sublimeWrapper.load_project_settings(view)
+        self.test_srcs = sublimeWrapper.get_setting("test_srcs", project_settings_dict, settings)
+        self.test_suffixes = sublimeWrapper.get_setting("test_suffixes", project_settings_dict, settings)
+        self.prod_srcs = sublimeWrapper.get_setting("production_srcs", project_settings_dict, settings)
+        self.file_ext = sublimeWrapper.get_setting("file_ext", project_settings_dict, settings)
+        self.should_log = sublimeWrapper.get_setting("log", project_settings_dict, settings)
+        self.display_error_location = scoggle.get_display_error_location(
+            sublimeWrapper.get_setting("display_errors_in", project_settings_dict, settings),
+            sublimeWrapper.show_error_message,
+            sublimeWrapper.show_status_message)
+
+        if (self.should_log):
+            self.logger.setLevel(logging.DEBUG)
+        else:
+            self.logger.setLevel(logging.ERROR)
+
+        self.logger.debug("loaded the following config: {0}", str(self))
+
+    def __str__(self):
+        newline = '\n'
+        newlineTab = "{0}\t".format(newline)
+
+        toString = "ScoggleConfig({0}'test_suffixes' : {1},{0}'test_srcs' : {2},{0}'production_srcs' : {3},{0}'log' : {4},{0}'file_ext' : {5}{6})".format(newlineTab, self.test_suffixes, self.test_srcs, self.prod_srcs, self.should_log, self.file_ext, newline)
+        return repr(toString)

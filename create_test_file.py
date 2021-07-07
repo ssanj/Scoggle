@@ -1,7 +1,6 @@
 import sublime
 import sublime_plugin
 import os
-import logging
 
 from Scoggle.components import scoggle as scoggle
 from Scoggle.components import sublime_wrapper as sublime_wrapper
@@ -16,35 +15,19 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         self.scoggle = scoggle.Scoggle()
         self.wrapper = sublime_wrapper.SublimeWrapper()
-
-        # TODO: Create a log wrapper
-        FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-        logging.basicConfig(format=FORMAT)
-        self.logger = logging.getLogger('scoggle.plugin')
+        self.config  = stypes.ScoggleConfig(self.view, self.wrapper, self.scoggle)
+        self.logger  = self.config.logger
 
         view = self.view
         self.window = self.wrapper.getActiveWindow()
 
         if view:
             try:
-                # TODO: move this out into a class - loading settings
                 current_file = self.wrapper.current_file(view)
-                settings = self.wrapper.load_settings("Scoggle")
-                project_settings_dict = self.wrapper.load_project_settings(view)
-                print("current file: ", str(current_file))
-                test_srcs = self.wrapper.get_setting("test_srcs", project_settings_dict, settings)
-                prod_srcs = self.wrapper.get_setting("production_srcs", project_settings_dict, settings)
-                file_ext = self.wrapper.get_setting("file_ext", project_settings_dict, settings)
-                should_log = self.wrapper.get_setting("log", project_settings_dict, settings)
-                display_error_location = self.scoggle.get_display_error_location(
-                    self.wrapper.get_setting("display_errors_in", project_settings_dict, settings),
-                    self.wrapper.show_error_message,
-                    self.wrapper.show_status_message)
-
-                if (should_log):
-                    self.logger.setLevel(logging.DEBUG)
-                else:
-                    self.logger.setLevel(logging.ERROR)
+                self.logger.debug("current file: ", str(current_file))
+                test_srcs = self.config.test_srcs
+                prod_srcs = self.config.prod_srcs
+                file_ext = self.config.file_ext
 
                 root_dir, selected_prod_src = self.scoggle.get_first_root_path_pair_or_error(current_file, prod_srcs)
                 source_dir_minus_package = os.path.join(root_dir, selected_prod_src)
