@@ -77,11 +77,10 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
             self.logger.debug("you selected {0}".format(str(selected_text)))
             heading = "Create test file for: {0}".format(selected_text)
             result = self.wrapper.yes_no_cancel_dialog(heading, "Yes", "No")
-            self.logger.debug("User chose Y(1)|N(2)|Cancel(3) ====> ", result)
             selected_file_name = os.path.splitext(selected_text)[0] # get file name without the ext
             if isinstance(result, stypes.Yes):
                  param = stypes.TestFileCreationParam(root_dir, package_path, test_srcs, selected_file_name)
-                 self.window.show_quick_panel(test_srcs, self.file_selected(param), placeholder="select test source directory")
+                 self.window.show_quick_panel(test_srcs, self.test_src_selected(param), placeholder="select test source directory")
             else:
                 pass
                 # No or Cancel
@@ -89,27 +88,29 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
             # TODO: We should probably just use the file name here.
             print("invalid selection")
 
-    def file_selected(self, params):
-        def handle_selection(selected_index):
+    # Handles the selected test source path
+    def test_src_selected(self, params):
+        def handle_test_src_path_selected(selected_index):
             if selected_index != -1:
-                 print("params: ", str(params))
+                 self.logger.debug("file_selected params: {0}".format(str(params)))
                  test_src_path = params.test_srcs[selected_index] # test source path selected by user
-                 root_test_src_path = os.path.join(params.root_dir, test_src_path.lstrip(os.path.sep))
-                 root_test_src_path_package = os.path.join(root_test_src_path, params.package_dir.lstrip(os.path.sep))
-                 test_file_name = params.file_name + "Spec.scala"
-                 test_file_path = os.path.join(root_test_src_path_package, test_file_name.lstrip(os.path.sep))
-                 print("test_file_path: ", test_file_path)
+                 root_test_src_path = os.path.join(params.root_dir, test_src_path.lstrip(os.path.sep)) # strip starting path separators
+                 root_test_src_path_package = os.path.join(root_test_src_path, params.package_dir.lstrip(os.path.sep)) # strip starting path separators
+                 test_file_name = params.file_name + "Spec.scala" # TODO: we should define the default suffix somewhere.
+                 test_file_path = os.path.join(root_test_src_path_package, test_file_name.lstrip(os.path.sep)) # strip starting path separators
+                 self.logger.debug("test_file_path: {0}".format(test_file_path))
                  self.wrapper.show_input_panel("create test file at:", test_file_path, self.create_test_file, None, None)
 
-        return handle_selection
+        return handle_test_src_path_selected
 
+    # Creates test file path
     def create_test_file(self, incoming):
-        test_file_name_parts = os.path.split(incoming)
-        test_file_dir  = test_file_name_parts[0]
-        test_file_name = test_file_name_parts[1]
-        if not os.path.isfile(incoming):
-            if not os.path.exists(test_file_dir):
-                print("creating dir:", str(test_file_dir))
+        test_file_name_parts = os.path.split(incoming) #split file into path and file
+        test_file_dir  = test_file_name_parts[0] # path up to the file name
+        test_file_name = test_file_name_parts[1] # file name and extension
+        if not os.path.isfile(incoming): # File doesn't already exist, so proceed
+            if not os.path.exists(test_file_dir): # if the path doesn't exist, create it
+                self.logger.debug("creating parent directory: {0} for file: {1}".format(str(test_file_dir), str(test_file_name)))
                 os.makedirs(test_file_dir)
 
             f = open(incoming, "w+")
@@ -117,28 +118,28 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
             f.close()
             view = self.window.open_file(incoming)
             tries = 5
-            sublime.set_timeout_async(lambda: self.expand_snippet(view, tries), 1)
+            sublime.set_timeout_async(lambda: self.expand_snippet(view, tries), 1) # try to expand snippet in one second
         else:
-            result = sublime.yes_no_cancel_dialog(("Test file: " + str(incoming) + " already exists\nUse different name?"), "Yes", "No")
-            if result == 1:
-                new_test_file_name = "UNIQUE-PREFIX" + str(test_file_name)
+            result = self.wrapper.yes_no_cancel_dialog("Test file: {0} already exists\nUse different name?".format(str(incoming)), "Yes", "No")
+            if (isinstance(result, stypes.Yes)):
+                new_test_file_name = "UNIQUE-PREFIX-{0}".format(str(test_file_name))
                 test_file_path = os.path.join(test_file_dir, new_test_file_name.lstrip(os.path.sep))
                 self.wrapper.show_input_panel("create test file at:", test_file_path, self.create_test_file, None, None)
 
     def expand_snippet(self, view, tries):
-      if not view.is_loading():
-          print("loaded!")
+      if not view.is_loading(): # if the view has loaded
+          self.logger.debug("the test file view has loaded")
           view.sel().clear()
           view.sel().add(sublime.Region(0))
           view.show(0)
+
           # TODO: Pull these in from the settings
           view.run_command('insert_snippet', { "name": 'Packages/User/snippets/scala_spec_template.sublime-snippet', "PACKAGE": 'x.y.z', "TEST_NAME": "Blee"})
       elif tries > 0:
-          print("waiting! ", str(tries))
-          sublime.set_timeout_async(lambda: self.expand_snippet(view, tries - 1), 1)
+          self.logger.debug("waiting for view with {0} retries".format(str(tries)))
+          sublime.set_timeout_async(lambda: self.expand_snippet(view, tries - 1), 1) # keep trying until we run out of retries
       else:
-          print("error!")
+          self.logger.error("View did not load within allotted retries")
           self.wrapper.show_error_message("Could not load snippet :(")
-
 
 
