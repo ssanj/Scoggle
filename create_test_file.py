@@ -42,9 +42,9 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
                 # 2 -> The String following the match (package path + file name + ext)
                 if len(path_pieces) >= 3:
                     package_path_and_file_ext = path_pieces[2] #get the package path + file name + ext
-                    package_path = os.path.split(package_path_and_file_ext)[0] #get the package path
+                    (package_path, file_name_ext) = os.path.split(package_path_and_file_ext) #get the package path
 
-                    self.handle_test_file_creation(view, root_dir, package_path, test_srcs)
+                    self.handle_test_file_creation(view, root_dir, package_path, test_srcs, file_name_ext)
                 else:
                     self.logger.error("Could not split source_dir_minus_package into 3: {0}".format(str(path_pieces)))
 
@@ -55,23 +55,38 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
              self.logger.error("Could not find active view")
 
 
-    def handle_test_file_creation(self, view, root_dir, package_path, test_srcs):
+    def handle_test_file_creation(self, view, root_dir, package_path, test_srcs, file_name_ext):
         region_string = view.sel()[0] #get the first selection region
-        if region_string:
-            selected_text = view.substr(region_string)
-            self.logger.debug("you selected {0}".format(str(selected_text)))
-            heading = "Create test file for: {0}".format(selected_text)
-            result = self.wrapper.yes_no_cancel_dialog(heading, "Yes", "No")
-            selected_file_name = os.path.splitext(selected_text)[0] # get file name without the ext
-            if isinstance(result, stypes.Yes):
-                 param = stypes.TestFileCreationParam(root_dir, package_path, test_srcs, selected_file_name)
-                 test_file_path_creator = TestFilePathCreator(param)
-                 self.window.show_quick_panel(test_srcs, self.test_src_selected(test_file_path_creator), placeholder="select test source directory")
-            else:
-                pass # No or Cancel
+        selected_text = self.choose_file_name(region_string, view, file_name_ext)
+        # selected_text = view.substr(region_string) if region_string   ??? else if  else file_name_ext
+
+        self.logger.debug("you selected {0}".format(str(selected_text)))
+        heading = "Create test file for: {0}".format(selected_text)
+        result = self.wrapper.yes_no_cancel_dialog(heading, "Yes", "No")
+        selected_file_name = os.path.splitext(selected_text)[0] # get file name without the ext
+        if isinstance(result, stypes.Yes):
+             param = stypes.TestFileCreationParam(root_dir, package_path, test_srcs, selected_file_name)
+             test_file_path_creator = TestFilePathCreator(param)
+             self.window.show_quick_panel(test_srcs, self.test_src_selected(test_file_path_creator), placeholder="select test source directory")
         else:
-            # TODO: We should probably just use the file name here.
-            print("invalid selection")
+            pass # No or Cancel
+        # else:
+        #     # TODO: We should probably just use the file name here.
+        #     self.logger.error("invalid selection, could use: {file_name_ext}".format(file_name_ext = file_name_ext))
+
+    def choose_file_name(self, cursor, view, file_name_ext):
+        cursor_string = view.substr(cursor)
+        cursor_word   = view.substr(view.word(cursor))
+
+        self.logger.debug("cursor_string:".format(str(cursor_string)))
+        self.logger.debug("cursor_word:".format(str(cursor_word)))
+
+        if cursor_string:
+            return cursor_string
+        elif cursor_word:
+            return cursor_word
+        else:
+            return file_name_ext
 
     # Handles the selected test source path
     def test_src_selected(self, test_file_path_creator):
