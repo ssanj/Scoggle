@@ -26,6 +26,12 @@ class SublimeWrapper:
     def getActiveWindow(self):
         return sublime.active_window()
 
+    def get_packages_path(self):
+        return sublime.packages_path()
+
+    def get_packages_path_with(self, relative_path):
+        return os.path.join(self.get_packages_path(), relative_path.lstrip(os.path.sep))
+
     def show_input_panel(self, caption, text, on_done, on_change, on_cancel):
         sublime.active_window().show_input_panel(caption, text, on_done, on_change, on_cancel)
 

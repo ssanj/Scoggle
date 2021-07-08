@@ -19,6 +19,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
         self.logger  = self.config.logger
 
         self.logger.debug("loaded the following config: {0}".format(str(self.config)))
+        self.logger.debug("template dir: " + str(self.wrapper.get_packages_path_with("/User/template")))
 
         view = self.view
         self.window = self.wrapper.getActiveWindow()
@@ -28,7 +29,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
                 current_file = self.wrapper.current_file(view)
                 self.logger.debug("current file: {0}".format(str(current_file)))
                 test_srcs = self.config.test_srcs
-                prod_srcs = self.config.prod_srcs
+                prod_srcs = self.config.production_srcs
                 file_ext = self.config.file_ext
 
                 root_dir, selected_prod_src = self.scoggle.get_first_root_path_pair_or_error(current_file, prod_srcs)

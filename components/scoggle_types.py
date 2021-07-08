@@ -166,9 +166,13 @@ class ScoggleConfig():
         project_settings_dict = sublimeWrapper.load_project_settings(view)
         self.test_srcs = sublimeWrapper.get_setting("test_srcs", project_settings_dict, settings)
         self.test_suffixes = sublimeWrapper.get_setting("test_suffixes", project_settings_dict, settings)
-        self.prod_srcs = sublimeWrapper.get_setting("production_srcs", project_settings_dict, settings)
+        self.production_srcs = sublimeWrapper.get_setting("production_srcs", project_settings_dict, settings)
         self.file_ext = sublimeWrapper.get_setting("file_ext", project_settings_dict, settings)
         self.should_log = sublimeWrapper.get_setting("log", project_settings_dict, settings)
+
+        self.template_dir = sublimeWrapper.get_setting("template_dir", project_settings_dict, settings)
+        self.test_template_dir = sublimeWrapper.get_packages_path_with(self.template_dir) if self.template_dir is not None else None
+
         self.display_error_location = scoggle.get_display_error_location(
             sublimeWrapper.get_setting("display_errors_in", project_settings_dict, settings),
             sublimeWrapper.show_error_message,
@@ -180,8 +184,15 @@ class ScoggleConfig():
             self.logger.setLevel(logging.ERROR)
 
     def __str__(self):
-        newline = '\n'
-        newlineTab = "{0}\t".format(newline)
+        fields = [
+                "test_suffixes={0}".format(str(self.test_suffixes))
+            ,   ", test_srcs={0}".format(str(self.test_srcs))
+            ,   ", production_srcs={0}".format(str(self.production_srcs))
+            ,   ", should_log={0}".format(str(self.should_log))
+            ,   ", file_ext={0}".format(str(self.file_ext))
+            ,   ", template_dir={0}".format(str(self.template_dir))
+            ,   ", test_template_dir={0}".format(str(self.test_template_dir))
+        ]
 
-        toString = "ScoggleConfig({0}'test_suffixes' : {1},{0}'test_srcs' : {2},{0}'production_srcs' : {3},{0}'log' : {4},{0}'file_ext' : {5}{6})".format(str(newlineTab), str(self.test_suffixes), str(self.test_srcs), str(self.prod_srcs), str(self.should_log), str(self.file_ext), newline)
-        return repr(toString)
+        to_string ="ScoggleConfig({0})".format('\n'.join(fields))
+        return repr(to_string)

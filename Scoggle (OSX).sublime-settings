@@ -18,5 +18,6 @@
     ],
     "log" : false,
     "file_ext" : ".scala",
-    "display_errors_in" : "dialog" // one of ("dialog", "status_bar", "dont_display")
+    "display_errors_in" : "dialog", // one of ("dialog", "status_bar", "dont_display")
+    "template_dir": "/User/test-templates"
 }
