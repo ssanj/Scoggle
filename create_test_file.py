@@ -58,7 +58,6 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
     def handle_test_file_creation(self, view, root_dir, package_path, test_srcs, file_name_ext):
         region_string = view.sel()[0] #get the first selection region
         selected_text = self.choose_file_name(region_string, view, file_name_ext)
-        # selected_text = view.substr(region_string) if region_string   ??? else if  else file_name_ext
 
         self.logger.debug("you selected {0}".format(str(selected_text)))
         heading = "Create test file for: {0}".format(selected_text)
@@ -70,9 +69,6 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
              self.window.show_quick_panel(test_srcs, self.test_src_selected(test_file_path_creator), placeholder="select test source directory")
         else:
             pass # No or Cancel
-        # else:
-        #     # TODO: We should probably just use the file name here.
-        #     self.logger.error("invalid selection, could use: {file_name_ext}".format(file_name_ext = file_name_ext))
 
     def choose_file_name(self, cursor, view, file_name_ext):
         cursor_string = view.substr(cursor)
