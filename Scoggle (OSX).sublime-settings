@@ -19,5 +19,5 @@
     "log" : false,
     "file_ext" : ".scala",
     "display_errors_in" : "dialog", // one of ("dialog", "status_bar", "dont_display")
-    "default_test_suffix": "Spec.scala" //used when creating a new test file
+    "default_test_suffix": "Test.scala" //used when creating a new test file
 }

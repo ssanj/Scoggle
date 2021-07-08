@@ -71,6 +71,14 @@ class SublimeWrapper:
         else:
             return None
 
+    def get_setting_with_default(self, key, project_settings_dict, plugin_settings, default_value):
+        if project_settings_dict and key in project_settings_dict:
+            return project_settings_dict[key]
+        elif plugin_settings and plugin_settings.has(key):
+            return plugin_settings.get(key)
+        else:
+            return default_value
+
     def settings_as_string(self, prod_srcs, test_srcs, test_suffixes, file_ext, should_log):
         newline = '\n'
         newlineTab = "%(newline)c\t" % locals()

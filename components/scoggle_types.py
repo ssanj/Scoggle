@@ -168,6 +168,8 @@ class ScoggleConfig():
         self.test_suffixes = sublimeWrapper.get_setting("test_suffixes", project_settings_dict, settings)
         self.production_srcs = sublimeWrapper.get_setting("production_srcs", project_settings_dict, settings)
         self.file_ext = sublimeWrapper.get_setting("file_ext", project_settings_dict, settings)
+        self.default_test_suffix = sublimeWrapper.get_setting_with_default("default_test_suffix", project_settings_dict, settings, "Spec.scala")
+
         self.should_log = sublimeWrapper.get_setting("log", project_settings_dict, settings)
 
         self.display_error_location = scoggle.get_display_error_location(
@@ -180,6 +182,7 @@ class ScoggleConfig():
         else:
             self.logger.setLevel(logging.ERROR)
 
+
     def __str__(self):
         fields = [
                 "test_suffixes={0}".format(str(self.test_suffixes))
@@ -187,6 +190,7 @@ class ScoggleConfig():
             ,   ", production_srcs={0}".format(str(self.production_srcs))
             ,   ", should_log={0}".format(str(self.should_log))
             ,   ", file_ext={0}".format(str(self.file_ext))
+            ,   ", default_test_suffix={0}".format(str(self.default_test_suffix))
         ]
 
         to_string ="ScoggleConfig({0})".format('\n'.join(fields))
