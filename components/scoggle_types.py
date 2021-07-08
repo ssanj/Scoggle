@@ -134,15 +134,13 @@ class TestFileCreationParam():
         package_dir - the package path to the chosen test file without the root path
         test_srcs - the list of test source directories
         file_name - the prefix for the test file
-        test_template_dir - the test template directory
     """
-    def __init__(self, root_dir, package_dir, test_srcs, file_name, test_template_dir):
+    def __init__(self, root_dir, package_dir, test_srcs, file_name):
         self.root_dir = root_dir
         self.package_dir = package_dir
         self.test_srcs = test_srcs
         self.file_name = file_name
         self.suffix = "Spec.scala" #TODO: move to config
-        self.test_template_dir = test_template_dir
 
     def __str__(self):
         to_string = (
@@ -151,7 +149,6 @@ class TestFileCreationParam():
                 ", package_dir=" + str(self.package_dir) +
                 ", test_srcs=" + str(self.test_srcs) +
                 ", file_name=" + str(self.file_name) +
-                ", test_template_dir=" + str(self.test_template_dir) +
              ")"
         )
         return repr(to_string)
@@ -173,9 +170,6 @@ class ScoggleConfig():
         self.file_ext = sublimeWrapper.get_setting("file_ext", project_settings_dict, settings)
         self.should_log = sublimeWrapper.get_setting("log", project_settings_dict, settings)
 
-        self.template_dir = sublimeWrapper.get_setting("template_dir", project_settings_dict, settings)
-        self.test_template_dir = sublimeWrapper.get_packages_path_with(self.template_dir) if self.template_dir is not None else None
-
         self.display_error_location = scoggle.get_display_error_location(
             sublimeWrapper.get_setting("display_errors_in", project_settings_dict, settings),
             sublimeWrapper.show_error_message,
@@ -193,8 +187,6 @@ class ScoggleConfig():
             ,   ", production_srcs={0}".format(str(self.production_srcs))
             ,   ", should_log={0}".format(str(self.should_log))
             ,   ", file_ext={0}".format(str(self.file_ext))
-            ,   ", template_dir={0}".format(str(self.template_dir))
-            ,   ", test_template_dir={0}".format(str(self.test_template_dir))
         ]
 
         to_string ="ScoggleConfig({0})".format('\n'.join(fields))
