@@ -30,6 +30,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
                 test_srcs = self.config.test_srcs
                 prod_srcs = self.config.production_srcs
                 file_ext = self.config.file_ext
+                default_test_suffix = self.config.default_test_suffix
 
                 root_dir, selected_prod_src = self.scoggle.get_first_root_path_pair_or_error(current_file, prod_srcs)
                 source_dir_minus_package = os.path.join(root_dir, selected_prod_src)
@@ -44,7 +45,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
                     package_path_and_file_ext = path_pieces[2] #get the package path + file name + ext
                     (package_path, file_name_ext) = os.path.split(package_path_and_file_ext) #get the package path
 
-                    self.handle_test_file_creation(view, root_dir, package_path, test_srcs, file_name_ext)
+                    self.handle_test_file_creation(view, root_dir, package_path, test_srcs, file_name_ext, default_test_suffix)
                 else:
                     self.logger.error("Could not split source_dir_minus_package into 3: {0}".format(str(path_pieces)))
 
@@ -55,7 +56,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
              self.logger.error("Could not find active view")
 
 
-    def handle_test_file_creation(self, view, root_dir, package_path, test_srcs, file_name_ext):
+    def handle_test_file_creation(self, view, root_dir, package_path, test_srcs, file_name_ext, test_suffix):
         region_string = view.sel()[0] #get the first selection region
         selected_text = self.choose_file_name(region_string, view, file_name_ext)
 
@@ -64,7 +65,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
         result = self.wrapper.yes_no_cancel_dialog(heading, "Yes", "No")
         selected_file_name = os.path.splitext(selected_text)[0] # get file name without the ext
         if isinstance(result, stypes.Yes):
-             param = stypes.TestFileCreationParam(root_dir, package_path, test_srcs, selected_file_name)
+             param = stypes.TestFileCreationParam(root_dir, package_path, test_srcs, selected_file_name, test_suffix)
              self.logger.debug("TestFileCreationParam: {0}".format(str(param)))
              test_file_path_creator = TestFilePathCreator(param)
              self.logger.debug("TestFilePathCreator: {0}".format(str(test_file_path_creator)))
