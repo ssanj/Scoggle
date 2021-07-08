@@ -134,13 +134,15 @@ class TestFileCreationParam():
         package_dir - the package path to the chosen test file without the root path
         test_srcs - the list of test source directories
         file_name - the prefix for the test file
+        test_template_dir - the test template directory
     """
-    def __init__(self, root_dir, package_dir, test_srcs, file_name):
+    def __init__(self, root_dir, package_dir, test_srcs, file_name, test_template_dir):
         self.root_dir = root_dir
         self.package_dir = package_dir
         self.test_srcs = test_srcs
         self.file_name = file_name
-        self.suffix = "Spec.scala"
+        self.suffix = "Spec.scala" #TODO: move to config
+        self.test_template_dir = test_template_dir
 
     def __str__(self):
         to_string = (
@@ -149,6 +151,7 @@ class TestFileCreationParam():
                 ", package_dir=" + str(self.package_dir) +
                 ", test_srcs=" + str(self.test_srcs) +
                 ", file_name=" + str(self.file_name) +
+                ", test_template_dir=" + str(self.test_template_dir) +
              ")"
         )
         return repr(to_string)
