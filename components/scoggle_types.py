@@ -140,6 +140,7 @@ class TestFileCreationParam():
         self.package_dir = package_dir
         self.test_srcs = test_srcs
         self.file_name = file_name
+        self.suffix = "Spec.scala"
 
     def __str__(self):
         to_string = (
@@ -154,7 +155,7 @@ class TestFileCreationParam():
 
 class ScoggleConfig():
 
-    def __init__(self, view, sublimeWrapper, scoggle):
+    def __init__(self, view, sublimeWrapper, scoggle, override_debug):
         import logging
         # TODO: Create a log wrapper
         FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -173,16 +174,14 @@ class ScoggleConfig():
             sublimeWrapper.show_error_message,
             sublimeWrapper.show_status_message)
 
-        if (self.should_log):
+        if (self.should_log or override_debug):
             self.logger.setLevel(logging.DEBUG)
         else:
             self.logger.setLevel(logging.ERROR)
-
-        self.logger.debug("loaded the following config: {0}", str(self))
 
     def __str__(self):
         newline = '\n'
         newlineTab = "{0}\t".format(newline)
 
-        toString = "ScoggleConfig({0}'test_suffixes' : {1},{0}'test_srcs' : {2},{0}'production_srcs' : {3},{0}'log' : {4},{0}'file_ext' : {5}{6})".format(newlineTab, self.test_suffixes, self.test_srcs, self.prod_srcs, self.should_log, self.file_ext, newline)
+        toString = "ScoggleConfig({0}'test_suffixes' : {1},{0}'test_srcs' : {2},{0}'production_srcs' : {3},{0}'log' : {4},{0}'file_ext' : {5}{6})".format(str(newlineTab), str(self.test_suffixes), str(self.test_srcs), str(self.prod_srcs), str(self.should_log), str(self.file_ext), newline)
         return repr(toString)

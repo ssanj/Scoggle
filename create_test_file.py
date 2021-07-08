@@ -15,8 +15,10 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         self.scoggle = scoggle.Scoggle()
         self.wrapper = sublime_wrapper.SublimeWrapper()
-        self.config  = stypes.ScoggleConfig(self.view, self.wrapper, self.scoggle)
+        self.config  = stypes.ScoggleConfig(self.view, self.wrapper, self.scoggle, override_debug = True)
         self.logger  = self.config.logger
+
+        self.logger.debug("loaded the following config: {0}".format(str(self.config)))
 
         view = self.view
         self.window = self.wrapper.getActiveWindow()
@@ -24,7 +26,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
         if view:
             try:
                 current_file = self.wrapper.current_file(view)
-                self.logger.debug("current file: ", str(current_file))
+                self.logger.debug("current file: {0}".format(str(current_file)))
                 test_srcs = self.config.test_srcs
                 prod_srcs = self.config.prod_srcs
                 file_ext = self.config.file_ext
@@ -63,27 +65,24 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
             selected_file_name = os.path.splitext(selected_text)[0] # get file name without the ext
             if isinstance(result, stypes.Yes):
                  param = stypes.TestFileCreationParam(root_dir, package_path, test_srcs, selected_file_name)
-                 self.window.show_quick_panel(test_srcs, self.test_src_selected(param), placeholder="select test source directory")
+                 test_file_path_creator = TestFilePathCreator(param)
+                 self.window.show_quick_panel(test_srcs, self.test_src_selected(test_file_path_creator), placeholder="select test source directory")
             else:
-                pass
-                # No or Cancel
+                pass # No or Cancel
         else:
             # TODO: We should probably just use the file name here.
             print("invalid selection")
 
     # Handles the selected test source path
-    def test_src_selected(self, params):
+    def test_src_selected(self, test_file_path_creator):
         def handle_test_src_path_selected(selected_index):
-            if selected_index != -1:
-                 self.logger.debug("file_selected params: {0}".format(str(params)))
-                 # TODO: Do this in another class
-                 test_src_path = params.test_srcs[selected_index] # test source path selected by user
-                 root_test_src_path = os.path.join(params.root_dir, test_src_path.lstrip(os.path.sep)) # strip starting path separators
-                 root_test_src_path_package = os.path.join(root_test_src_path, params.package_dir.lstrip(os.path.sep)) # strip starting path separators
-                 test_file_name = params.file_name + "Spec.scala" # TODO: we should define the default suffix somewhere.
-                 test_file_path = os.path.join(root_test_src_path_package, test_file_name.lstrip(os.path.sep)) # strip starting path separators
-                 self.logger.debug("test_file_path: {0}".format(test_file_path))
-                 self.wrapper.show_input_panel("create test file at:", test_file_path, self.create_test_file, None, None)
+            test_file_path = test_file_path_creator.get_test_file_path(selected_index)
+            self.logger.debug("test_file_path: ".format(str(test_file_path)))
+            if test_file_path is not None:
+                self.logger.debug("test_file_path: {0}".format(test_file_path))
+                self.wrapper.show_input_panel("create test file at:", test_file_path, self.create_test_file, None, None)
+            else:
+                self.logger.debug("Could not get test_file_path")
 
         return handle_test_src_path_selected
 
@@ -110,6 +109,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
                 test_file_path = os.path.join(test_file_dir, new_test_file_name.lstrip(os.path.sep))
                 self.wrapper.show_input_panel("create test file at:", test_file_path, self.create_test_file, None, None)
 
+
     def expand_snippet(self, view, tries):
       if not view.is_loading(): # if the view has loaded
           self.logger.debug("the test file view has loaded")
@@ -127,3 +127,19 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
           self.wrapper.show_error_message("Could not load snippet :(")
 
 
+class TestFilePathCreator():
+
+    def __init__(self, params):
+        self.params = params
+
+    def get_test_file_path(self, selected_index):
+        params = self.params
+        if selected_index != -1 and selected_index < len(params.test_srcs):
+            test_src_path = params.test_srcs[selected_index] # test source path selected by user
+            root_test_src_path = os.path.join(params.root_dir, test_src_path.lstrip(os.path.sep)) # strip starting path separators
+            root_test_src_path_package = os.path.join(root_test_src_path, params.package_dir.lstrip(os.path.sep)) # strip starting path separators
+            test_file_name = "{0}{1}".format(params.file_name, params.suffix)
+            test_file_path = os.path.join(root_test_src_path_package, test_file_name.lstrip(os.path.sep)) # strip starting path separators
+            return test_file_path
+        else:
+            return None
