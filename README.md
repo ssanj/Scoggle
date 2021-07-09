@@ -312,11 +312,13 @@ package feature
 
 [__CMD + CTRL + SHIFT + T__]
 
+![Creating a Test File](scoggle-test-file-creation.gif)
+
 Creates a test file in the required test sources directory matching a file in the production source directory. The name of the test file to be created can be selected by:
 
 - Placing the cursor within a word that makes up the test file name and launching the test file creation feature (selects the word under the cursor)
 - Selecting a word and launching the test file creation feature (selects the highlighted word)
-- Placing the cursor within whitespace and launching the test file creation feature (selects the current file name)
+- Placing the cursor within an empty line and launching the test file creation feature (selects the current file name)
 
 
 In the example below, the cursor was placed within the `EitherValidations` object name.

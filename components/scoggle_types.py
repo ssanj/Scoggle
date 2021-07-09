@@ -143,6 +143,9 @@ class TestFileCreationParam():
         self.file_name = file_name
         self.suffix = suffix
 
+    def with_new_file_name(self, new_file_name):
+        return TestFileCreationParam(self.root_dir, self.package_dir, self.test_srcs, new_file_name, self.suffix)
+
     def __str__(self):
         to_string = (
             "TestFileCreationParam(" +

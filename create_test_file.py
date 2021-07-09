@@ -118,13 +118,16 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
             test_file_name_parts = os.path.split(incoming) #split file into path and file
             test_file_dir  = test_file_name_parts[0] # path up to the file name
             test_file_name = test_file_name_parts[1] # file name and extension
+            # Update test_file_path_creator in case the file name has changed
+            updated_test_file_path_creator = test_file_path_creator.with_new_test_file_name(test_file_name)
+
             ## Move file functionality into separate class
             if not os.path.isfile(incoming): # File doesn't already exist, so proceed
                 if not os.path.exists(test_file_dir): # if the path doesn't exist, create it
                     self.logger.debug("creating parent directory: {0} for file: {1}".format(str(test_file_dir), str(test_file_name)))
                     os.makedirs(test_file_dir)
 
-                test_template = self.template_string(test_file_path_creator)
+                test_template = self.template_string(updated_test_file_path_creator)
                 template_lines = len(test_template.split('\n'))
                 self.create_template_file(incoming, test_template)
 
@@ -135,7 +138,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
                 if (isinstance(result, stypes.Yes)):
                     new_test_file_name = "UNIQUE-PREFIX-{0}".format(str(test_file_name))
                     test_file_path = os.path.join(test_file_dir, new_test_file_name.lstrip(os.path.sep))
-                    self.wrapper.show_input_panel("create test file at:", test_file_path, self.create_test_file(test_file_path_creator), None, None)
+                    self.wrapper.show_input_panel("create test file at:", test_file_path, self.create_test_file(updated_test_file_path_creator), None, None)
 
         return handle_create_test_file
 
@@ -178,6 +181,17 @@ class TestFilePathCreator():
         file_name_with_ext = "{0}{1}".format(self.params.file_name, self.params.suffix)
         file_name = os.path.splitext(file_name_with_ext)[0] # get only the file name
         return file_name
+
+    def with_new_test_file_name(self, new_test_file_name_and_ext):
+        file_name = self.remove_suffix(new_test_file_name_and_ext)
+        new_params = self.params.with_new_file_name(file_name)
+        return TestFilePathCreator(new_params)
+
+    def remove_suffix(self, file_name_with_suffix):
+        if file_name_with_suffix.endswith(self.params.suffix):
+            return file_name_with_suffix[:-len(self.params.suffix)]
+        else:
+            return file_name_with_suffix
 
     def get_dotted_package_path(self):
         remove_left_sep = self.params.package_dir.lstrip(os.path.sep)
