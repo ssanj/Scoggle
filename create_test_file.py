@@ -116,8 +116,12 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
                     self.logger.debug("creating parent directory: {0} for file: {1}".format(str(test_file_dir), str(test_file_name)))
                     os.makedirs(test_file_dir)
 
-                self.create_template_file(incoming, self.template_string(test_file_path_creator))
-                self.window.open_file(incoming)
+                test_template = self.template_string(test_file_path_creator)
+                template_lines = len(test_template.split('\n'))
+                self.create_template_file(incoming, test_template)
+
+                file_name_with_position = "{0}:{1}".format(str(incoming), str(template_lines))
+                self.window.open_file(file_name_with_position, sublime.ENCODED_POSITION)
             else:
                 result = self.wrapper.yes_no_cancel_dialog("Test file: {0} already exists\nUse different name?".format(str(incoming)), "Yes", "No")
                 if (isinstance(result, stypes.Yes)):
