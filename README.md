@@ -33,7 +33,6 @@ Here is the default Scoggle.sublime-settings file:
     "test_srcs" :
     [
         "/src/test/scala",
-        "/src/it/scala"
     ],
     "test_suffixes" :
     [
@@ -44,14 +43,17 @@ Here is the default Scoggle.sublime-settings file:
         "Specification.scala"
     ],
     "log" : false,
-    "display_errors_in" : "dialog"
+    "display_errors_in" : "dialog",
+    "default_test_suffix": "Spec.scala"
 }
 ```
 
-__production_src__ list the production source directories to search through when switching to a production file.
-__test_srcs__ list the test source directories to search through when switching to  test file.
-__test_suffixes__ list the suffixes to search for when switching to a test file.
-__log__ specifies whether to turn on debug logging. __display_errors_in__ specifies where to display error messages. By default these are shown in a modal dialog ("dialog") but this can get annoying. To overcome this we have another two options: "status_bar" and "dont_display".
+- __production_src__ list the production source directories to search through when switching to a production file.
+- __test_srcs__ list the test source directories to search through when switching to  test file.
+- __test_suffixes__ list the suffixes to search for when switching to a test file.
+- __log__ specifies whether to turn on debug logging.
+- __display_errors_in__ specifies where to display error messages. By default these are shown in a modal dialog ("dialog") but this can get annoying. To overcome this we have another two options: "status_bar" and "dont_display".
+- __default_test_suffix__ specifies the default test file name suffix to use when creating a test file.
 
 
 The plugin settings file can be overridden on a per-project basis. The configuration is as above but it has a namespace of "Scoggle" associated with it.
@@ -85,6 +87,7 @@ Here's a sample .sublime-project file with Scoggle settings:
 }
 ```
 
+_Note: any settings not mentioned in the project settings will be sourced from the default settings or user settings if they have been overridden.
 _Gotcha: remember that project settings are only active when you open the source directory as a Project not through File > Open._
 
 _When customising settings for Windows, remember to replace forward slashes with double backslashes._
@@ -304,3 +307,32 @@ package feature
 
 ![Collapsing a package through Scoggle](scoggle_sublime_text_plugin_collapse_package.gif)
 
+
+### Create Test File ###
+
+[__CMD + CTRL + SHIFT + T__]
+
+Creates a test file in the required test sources directory matching a file in the production source directory. The name of the test file to be created can be selected by:
+
+- Placing the cursor within a word that makes up the test file name and launching the test file creation feature (selects the word under the cursor)
+- Selecting a word and launching the test file creation feature (selects the highlighted word)
+- Placing the cursor within whitespace and launching the test file creation feature (selects the current file name)
+
+
+In the example below, the cursor was placed within the `EitherValidations` object name.
+
+![Word Under Cursor Selected](scoggle_sublime_text_select_test_file_name.png)
+
+If there is only a single test source directory, an input is shown with the test file name that will be created including its path. If any adjustments to the test file name need to be made, they can be made here. Notice the `default_test_suffix` is used to create the file name.
+
+![Edit Test File](scoggle_sublime_text_edit_test_file_name.png)
+
+Pressing `enter` will create the path (if necessary) and the test file. The test file will have the package path and the class name included.
+
+![Test File Created](scoggle_sublime_text_test_file_created.png)
+
+If a test file with the same name already exists at the path specified, you will be given an option to select a new file name.
+
+![Retry Duplicate Test File Names](scoggle_sublime_text_duplicate_test_file_name.png)
+
+The default test file suffix used (`Spec.scala` in the above example) is retrieve from the `default_test_suffix` key in the settings file.
