@@ -145,7 +145,9 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
         template = [
                      "package {0}".format(package_path),
                      "",
-                     "//class name: {0}".format(str(test_name)),
+                     "final class {0} {{".format(str(test_name)),
+                     "//your code here",
+                     "}",
                      ""
                    ]
         return '\n'.join(template)

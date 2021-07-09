@@ -5,8 +5,7 @@
     ],
     "test_srcs" :
     [
-        "\\src\\test\\scala",
-        "\\src\\it\\scala"
+        "\\src\\test\\scala"
     ],
     "test_suffixes" :
     [

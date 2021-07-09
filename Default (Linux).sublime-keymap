@@ -2,13 +2,15 @@
     { "keys": ["ctrl+shift+e"], "command": "scoggle", "args": {"matcher": "prefix_suffix_matcher"},
         "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]},
 
-    { "keys": ["ctrl+shift+ctrl+e"], "command": "scoggle", "args": {"matcher": "prefix_wildcard_suffix_matcher"},
+    { "keys": ["ctrl+shift+e"], "command": "scoggle", "args": {"matcher": "prefix_wildcard_suffix_matcher"},
     "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]},
 
-    { "keys": ["ctrl+shift+ctrl+x"], "command": "scoggle", "args": {"matcher": "wildcard_prefix_wildcard_suffix_matcher"},
+    { "keys": ["ctrl+shift+x"], "command": "scoggle", "args": {"matcher": "wildcard_prefix_wildcard_suffix_matcher"},
     "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]},
 
     { "keys": ["ctrl+shift+g"], "command": "package", "args" : {"style" : "full"} },
 
-    { "keys": ["ctrl+shift+h"], "command": "package", "args" : {"style" : "step"} }
+    { "keys": ["ctrl+shift+h"], "command": "package", "args" : {"style" : "step"} },
+
+    { "keys": ["ctrl+shift+t"], "command": "prompt_create_test" }
 ]
