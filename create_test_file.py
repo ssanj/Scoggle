@@ -129,10 +129,11 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
 
     def template_string(self, test_file_path_creator):
         test_name = test_file_path_creator.get_test_file_class_name()
+        package_path = test_file_path_creator.get_dotted_package_path()
         template = [
-                     "package x.y.z",
+                     "package {0}".format(package_path),
                      "",
-                     "//class name: ${0}".format(str(test_name)),
+                     "//class name: {0}".format(str(test_name)),
                      ""
                    ]
         return '\n'.join(template)
@@ -180,6 +181,12 @@ class TestFilePathCreator():
         file_name_with_ext = "{0}{1}".format(self.params.file_name, self.params.suffix)
         file_name = os.path.splitext(file_name_with_ext)[0] # get only the file name
         return file_name
+
+    def get_dotted_package_path(self):
+        remove_left_sep = self.params.package_dir.lstrip(os.path.sep)
+        remove_right_sep = remove_left_sep.rstrip(os.path.sep)
+        dotted = remove_right_sep.replace(os.sep, ".")
+        return dotted
 
     def __str__(self):
         to_string = "TestFilePathCreator(params={0})".format(str(self.params))
