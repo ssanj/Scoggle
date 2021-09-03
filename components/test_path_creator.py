@@ -38,6 +38,7 @@ class TestFilePathCreator():
             new_params = self.params.with_new_file_name(file_name_without_test_ext, suffix)
             return TestFilePathCreator(new_params, self.logger)
         else:
+            logger.error("Could not use supplied test name to extract suffix. File name supplied {0}. Please retry with another name.".format(str(new_test_file_name_and_ext)))
             return None
 
     def get_dotted_package_path(self):
