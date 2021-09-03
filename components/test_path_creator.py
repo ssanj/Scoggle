@@ -43,7 +43,7 @@ class TestFilePathCreator():
                     test_framework_ext = test_framework_ext_match[0]
                     suffix = "{0}{1}".format(test_framework_ext, ".scala") # Append .scala extension to test extension - Spec.scala, Suite.scala etc
                     file_name_without_test_ext = file_name.split(test_framework_ext)[0] #Get file name without the test extension
-                    new_params = self.params.with_new_file_name2(package_path, file_name_without_test_ext, suffix)
+                    new_params = self.params.with_new_file_name(package_path, file_name_without_test_ext, suffix)
                     return TestFilePathCreator(new_params, self.logger)
                 else:
                     self.logger.error("Could not use supplied test name to extract suffix from root_test_src_path of {0}, new_test_file of {1}. Please retry with another name.".format(str(root_test_src_path), str(new_test_file)))

@@ -143,14 +143,7 @@ class TestFileCreationParam():
         self.suffix = suffix
         self.root_test_src_path = None
 
-    def with_new_file_name(self, new_file_name, new_suffix):
-        new_params = TestFileCreationParam(self.root_dir, self.package_dir, self.test_srcs, new_file_name, new_suffix)
-        #Copy this across. We can't send this through the constructor because it's not available at creation time.
-        # Or can we? Simply send through None for the initial value.
-        new_params.root_test_src_path = self.root_test_src_path
-        return new_params
-
-    def with_new_file_name2(self, package_dir, new_file_name, new_suffix):
+    def with_new_file_name(self, package_dir, new_file_name, new_suffix):
         new_params = TestFileCreationParam(self.root_dir, package_dir, self.test_srcs, new_file_name, new_suffix)
         new_params.root_test_src_path = self.root_test_src_path
         return new_params
