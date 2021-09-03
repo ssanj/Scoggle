@@ -28,17 +28,17 @@ class TestFilePathCreator():
     def with_new_test_file_name(self, new_test_file_name_and_ext):
         base_name = os.path.basename(new_test_file_name_and_ext) # file name and extension (without path)
         (file_name, ext) = os.path.splitext(base_name) #split into file and ext
-        test_framework_ext_match = re.findall(r'([A-Z][a-z0-9]+)$', file_name) #Find last word - example Spec or Suite or Test etc
+        test_framework_ext_match = re.findall(r'([A-Z][A-Za-z0-9]+)$', file_name) #Find last word - example Spec or Suite or Test etc
 
 
-        if test_framework_ext_match is not None:
+        if test_framework_ext_match is not None and len(test_framework_ext_match) != 0:
             test_framework_ext = test_framework_ext_match[0]
             suffix = "{0}{1}".format(test_framework_ext, ".scala") # Append .scala extension to test extension - Spec.scala, Suite.scala etc
             file_name_without_test_ext = file_name.split(test_framework_ext)[0] #Get file name without the test extension
             new_params = self.params.with_new_file_name(file_name_without_test_ext, suffix)
             return TestFilePathCreator(new_params, self.logger)
         else:
-            logger.error("Could not use supplied test name to extract suffix. File name supplied {0}. Please retry with another name.".format(str(new_test_file_name_and_ext)))
+            self.logger.error("Could not use supplied test name to extract suffix. File name supplied {0}. Please retry with another name.".format(str(new_test_file_name_and_ext)))
             return None
 
     def get_dotted_package_path(self):

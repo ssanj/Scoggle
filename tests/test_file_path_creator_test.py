@@ -54,3 +54,42 @@ class TestFilePathCreatorTest(unittest.TestCase):
       self.assertEqual(new_test_file_class_name, "AnotherThingThatIsCoolSpec")
       self.assertEqual(new_package_path, "my.awesome.project")
 
+  def test_with_new_test_file_name_with_odd_file_names(self):
+      root_dir = "/some/root/dir"
+      package_dir = "my/awesome/project/"
+      test_srcs = ["/src/test/"]
+      file_name = "AwesomeThing"
+      suffix = "Suite.scala"
+      params = stypes.TestFileCreationParam(root_dir, package_dir, test_srcs, file_name, suffix)
+      logger =  MyLogger()
+      creator = tftypes.TestFilePathCreator(params, logger)
+
+      # This changes the file name (nothing else)
+      new_creator1 = creator.with_new_test_file_name("AnotherThingThatIsCoolSPEC.scala")
+
+      self.assertEqual(logger.message, None)
+      self.assertEqual(new_creator1.get_test_file_class_name(), "AnotherThingThatIsCoolSPEC")
+
+      new_creator2 = creator.with_new_test_file_name("AnotherThingThatIsCool$$#.scala")
+      self.assertEqual(logger.message, "Could not use supplied test name to extract suffix. File name supplied AnotherThingThatIsCool$$#.scala. Please retry with another name.")
+      self.assertEqual(new_creator2, None)
+
+      logger.message = None
+      new_creator3 = creator.with_new_test_file_name("AnotherThingThatIsCooltest.scala")
+      self.assertEqual(logger.message, None)
+      self.assertEqual(new_creator3.get_test_file_class_name(), "AnotherThingThatIsCooltest")
+
+      logger.message = None
+      new_creator4 = creator.with_new_test_file_name("alllowercasespec.scala")
+      self.assertEqual(logger.message, "Could not use supplied test name to extract suffix. File name supplied alllowercasespec.scala. Please retry with another name.")
+      self.assertEqual(new_creator4, None)
+
+
+class MyLogger():
+
+  def __init__(self):
+    self.message = None
+
+  def error(self, message):
+    self.message = message
+
