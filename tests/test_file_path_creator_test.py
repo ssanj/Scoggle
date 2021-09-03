@@ -44,7 +44,7 @@ class TestFilePathCreatorTest(unittest.TestCase):
       self.assertEqual(package_path, "my.awesome.project")
 
       # New creator
-      new_creator = creator.with_new_test_file_name2("/some/root/dir/src/test/my/awesome/project/AnotherThingThatIsCoolSpec.scala")
+      new_creator = creator.with_new_test_file_name("/some/root/dir/src/test/my/awesome/project/AnotherThingThatIsCoolSpec.scala")
       new_test_file_class_name = new_creator.get_test_file_class_name()
       new_package_path = new_creator.get_dotted_package_path()
 
@@ -66,21 +66,21 @@ class TestFilePathCreatorTest(unittest.TestCase):
       creator = tftypes.TestFilePathCreator(params, logger)
       creator.get_test_file_path(0) #needed to select the test source
 
-      new_creator1 = creator.with_new_test_file_name2("/some/root/dir/src/test/my/awesome/project/AnotherThingThatIsCoolSPEC.scala")
+      new_creator1 = creator.with_new_test_file_name("/some/root/dir/src/test/my/awesome/project/AnotherThingThatIsCoolSPEC.scala")
       self.assertEqual(logger.message, None)
       self.assertEqual(new_creator1.get_test_file_class_name(), "AnotherThingThatIsCoolSPEC")
 
-      new_creator2 = creator.with_new_test_file_name2("/some/root/dir/src/test/my/awesome/project/AnotherThingThatIsCool$$#.scala")
+      new_creator2 = creator.with_new_test_file_name("/some/root/dir/src/test/my/awesome/project/AnotherThingThatIsCool$$#.scala")
       self.assertEqual(logger.message, "Could not use supplied test name to extract suffix from root_test_src_path of /some/root/dir/src/test/, new_test_file of /some/root/dir/src/test/my/awesome/project/AnotherThingThatIsCool$$#.scala. Please retry with another name.")
       self.assertEqual(new_creator2, None)
 
       logger.message = None
-      new_creator3 = creator.with_new_test_file_name2("/some/root/dir/src/test/my/awesome/project/AnotherThingThatIsCooltest.scala")
+      new_creator3 = creator.with_new_test_file_name("/some/root/dir/src/test/my/awesome/project/AnotherThingThatIsCooltest.scala")
       self.assertEqual(logger.message, None)
       self.assertEqual(new_creator3.get_test_file_class_name(), "AnotherThingThatIsCooltest")
 
       logger.message = None
-      new_creator4 = creator.with_new_test_file_name2("/some/root/dir/src/test/my/awesome/project/alllowercasespec.scala")
+      new_creator4 = creator.with_new_test_file_name("/some/root/dir/src/test/my/awesome/project/alllowercasespec.scala")
       self.assertEqual(logger.message, "Could not use supplied test name to extract suffix from root_test_src_path of /some/root/dir/src/test/, new_test_file of /some/root/dir/src/test/my/awesome/project/alllowercasespec.scala. Please retry with another name.")
       self.assertEqual(new_creator4, None)
 
@@ -105,7 +105,7 @@ class TestFilePathCreatorTest(unittest.TestCase):
       self.assertEqual(package_path, "my.awesome.project")
 
       # New creator
-      new_creator = creator.with_new_test_file_name2("/some/root/dir/src/test/my/awesome/project/take2/AwesomeThingSuite.scala")
+      new_creator = creator.with_new_test_file_name("/some/root/dir/src/test/my/awesome/project/take2/AwesomeThingSuite.scala")
       self.assertEqual(new_creator is None, False)
       new_test_file_class_name = new_creator.get_test_file_class_name()
       new_package_path = new_creator.get_dotted_package_path()

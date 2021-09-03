@@ -122,7 +122,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
             self.logger.debug("test_file_dir: {0}".format(test_file_dir))
             self.logger.debug("test_file_name: {0}".format(test_file_name))
             # Update test_file_path_creator in case the file name has changed, with possibly the extension
-            updated_test_file_path_creator = test_file_path_creator.with_new_test_file_name2(incoming)
+            updated_test_file_path_creator = test_file_path_creator.with_new_test_file_name(incoming)
             if updated_test_file_path_creator is None:
                 self.wrapper.show_error_message("Could not figure out suitable file name for test file. Please see logs for details")
             else:
