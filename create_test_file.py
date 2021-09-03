@@ -1,6 +1,7 @@
 import sublime
 import sublime_plugin
 import os
+import re
 
 from Scoggle.components import scoggle as scoggle
 from Scoggle.components import sublime_wrapper as sublime_wrapper
@@ -18,7 +19,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
         self.config  = stypes.ScoggleConfig(self.view, self.wrapper, self.scoggle, override_debug = True)
         self.logger  = self.config.logger
 
-        self.logger.debug("loaded the following config: {0}".format(str(self.config)))
+        self.logger.debug("loaded the following configX: {0}".format(str(self.config)))
         display_error_location = self.config.display_error_location
 
         view = self.view
@@ -73,7 +74,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
         if isinstance(result, stypes.Yes):
             param = stypes.TestFileCreationParam(root_dir, package_path, test_srcs, selected_file_name, test_suffix)
             self.logger.debug("TestFileCreationParam: {0}".format(str(param)))
-            test_file_path_creator = TestFilePathCreator(param)
+            test_file_path_creator = TestFilePathCreator(param, self.logger)
 
             if len(test_srcs) == 1:
                 self.test_src_selected(test_file_path_creator)(0)
@@ -103,7 +104,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
     def test_src_selected(self, test_file_path_creator):
         def handle_test_src_path_selected(selected_index):
             test_file_path = test_file_path_creator.get_test_file_path(selected_index)
-            self.logger.debug("test_file_path1: ".format(str(test_file_path)))
+            self.logger.debug("test_file_path1: {0}".format(str(test_file_path)))
             if test_file_path is not None:
                 self.logger.debug("test_file_path2: {0}".format(test_file_path))
                 self.wrapper.show_input_panel("create test file at:", test_file_path, self.create_test_file(test_file_path_creator), None, None)
@@ -118,27 +119,33 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
             test_file_name_parts = os.path.split(incoming) #split file into path and file
             test_file_dir  = test_file_name_parts[0] # path up to the file name
             test_file_name = test_file_name_parts[1] # file name and extension
-            # Update test_file_path_creator in case the file name has changed
+            self.logger.debug("test_file_dir: {0}".format(test_file_dir))
+            self.logger.debug("test_file_name: {0}".format(test_file_name))
+            # Update test_file_path_creator in case the file name has changed, with possibly the extension
             updated_test_file_path_creator = test_file_path_creator.with_new_test_file_name(test_file_name)
-
-            ## Move file functionality into separate class
-            if not os.path.isfile(incoming): # File doesn't already exist, so proceed
-                if not os.path.exists(test_file_dir): # if the path doesn't exist, create it
-                    self.logger.debug("creating parent directory: {0} for file: {1}".format(str(test_file_dir), str(test_file_name)))
-                    os.makedirs(test_file_dir)
-
-                test_template = self.template_string(updated_test_file_path_creator)
-                template_lines = len(test_template.split('\n'))
-                self.create_template_file(incoming, test_template)
-
-                file_name_with_position = "{0}:{1}".format(str(incoming), str(template_lines))
-                self.window.open_file(file_name_with_position, sublime.ENCODED_POSITION)
+            if updated_test_file_path_creator is None:
+                self.wrapper.show_error_message("Could not figure out suitable file name for test file. Please see logs for details")
             else:
-                result = self.wrapper.yes_no_cancel_dialog("Test file: {0} already exists\nUse different name?".format(str(incoming)), "Yes", "No")
-                if (isinstance(result, stypes.Yes)):
-                    new_test_file_name = "UNIQUE-PREFIX-{0}".format(str(test_file_name))
-                    test_file_path = os.path.join(test_file_dir, new_test_file_name.lstrip(os.path.sep))
-                    self.wrapper.show_input_panel("create test file at:", test_file_path, self.create_test_file(updated_test_file_path_creator), None, None)
+                self.logger.debug("updated_test_file_path_creator: {0}".format(updated_test_file_path_creator))
+
+                ## Move file functionality into separate class
+                if not os.path.isfile(incoming): # File doesn't already exist, so proceed
+                    if not os.path.exists(test_file_dir): # if the path doesn't exist, create it
+                        self.logger.debug("creating parent directory: {0} for file: {1}".format(str(test_file_dir), str(test_file_name)))
+                        os.makedirs(test_file_dir)
+
+                    test_template = self.template_string(updated_test_file_path_creator)
+                    template_lines = len(test_template.split('\n'))
+                    self.create_template_file(incoming, test_template)
+
+                    file_name_with_position = "{0}:{1}".format(str(incoming), str(template_lines))
+                    self.window.open_file(file_name_with_position, sublime.ENCODED_POSITION)
+                else:
+                    result = self.wrapper.yes_no_cancel_dialog("Test file: {0} already exists\nUse different name?".format(str(incoming)), "Yes", "No")
+                    if (isinstance(result, stypes.Yes)):
+                        new_test_file_name = "UNIQUE-PREFIX-{0}".format(str(test_file_name))
+                        test_file_path = os.path.join(test_file_dir, new_test_file_name.lstrip(os.path.sep))
+                        self.wrapper.show_input_panel("create test file at:", test_file_path, self.create_test_file(updated_test_file_path_creator), None, None)
 
         return handle_create_test_file
 
@@ -162,8 +169,9 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
 
 class TestFilePathCreator():
 
-    def __init__(self, params):
+    def __init__(self, params, logger):
         self.params = params
+        self.logger = logger
 
     def get_test_file_path(self, selected_index):
         params = self.params
@@ -177,21 +185,26 @@ class TestFilePathCreator():
         else:
             return None
 
+    ## uses old suffix - we need the new suffix
     def get_test_file_class_name(self):
         file_name_with_ext = "{0}{1}".format(self.params.file_name, self.params.suffix)
         file_name = os.path.splitext(file_name_with_ext)[0] # get only the file name
         return file_name
 
     def with_new_test_file_name(self, new_test_file_name_and_ext):
-        file_name = self.remove_suffix(new_test_file_name_and_ext)
-        new_params = self.params.with_new_file_name(file_name)
-        return TestFilePathCreator(new_params)
+        base_name = os.path.basename(new_test_file_name_and_ext) # file name and extension (without path)
+        (file_name, ext) = os.path.splitext(base_name) #split into file and ext
+        test_framework_ext_match = re.findall(r'([A-Z][a-z0-9]+)$', file_name) #Find last word - example Spec or Suite or Test etc
 
-    def remove_suffix(self, file_name_with_suffix):
-        if file_name_with_suffix.endswith(self.params.suffix):
-            return file_name_with_suffix[:-len(self.params.suffix)]
+
+        if test_framework_ext_match is not None:
+            test_framework_ext = test_framework_ext_match[0]
+            suffix = "{0}{1}".format(test_framework_ext, ".scala") # Append .scala extension to test extension - Spec.scala, Suite.scala etc
+            file_name_without_test_ext = file_name.split(test_framework_ext)[0] #Get file name without the test extension
+            new_params = self.params.with_new_file_name(file_name_without_test_ext, suffix)
+            return TestFilePathCreator(new_params, self.logger)
         else:
-            return file_name_with_suffix
+            return None
 
     def get_dotted_package_path(self):
         remove_left_sep = self.params.package_dir.lstrip(os.path.sep)

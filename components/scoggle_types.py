@@ -126,7 +126,6 @@ class CantDeterminePackageError(Exception):
     def __str__(self):
         return repr(self.cause)
 
-
 class TestFileCreationParam():
     """
         All the bits and pieces required to create a test file from a production file.
@@ -143,8 +142,8 @@ class TestFileCreationParam():
         self.file_name = file_name
         self.suffix = suffix
 
-    def with_new_file_name(self, new_file_name):
-        return TestFileCreationParam(self.root_dir, self.package_dir, self.test_srcs, new_file_name, self.suffix)
+    def with_new_file_name(self, new_file_name, new_suffix):
+        return TestFileCreationParam(self.root_dir, self.package_dir, self.test_srcs, new_file_name, new_suffix)
 
     def __str__(self):
         to_string = (
