@@ -61,7 +61,7 @@ class TestFilePathCreator():
                     new_params = self.params.with_new_file_name2(package_path, file_name_without_test_ext, suffix)
                     return TestFilePathCreator(new_params, self.logger)
                 else:
-                    self.logger.error("Could not use supplied test name to extract suffix. File name supplied {0}. Please retry with another name.".format(str(new_test_file_name_and_ext)))
+                    self.logger.error("Could not use supplied test name to extract suffix from root_test_src_path of {0}, new_test_file of {1}. Please retry with another name.".format(str(root_test_src_path), str(new_test_file)))
                     return None
             else:
                 self.logger.error("Could not determine package path from root_test_src_path of {0}, new_test_file of {1}".format(str(root_test_src_path), str(new_test_file)))
