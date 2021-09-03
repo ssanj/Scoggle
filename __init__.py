@@ -2,6 +2,7 @@ import os
 
 import Scoggle.components.scoggle
 import Scoggle.components.scoggle_types
+import Scoggle.components.test_path_creator
 
 # We remove this if we are running the unit tests as we are running outside sublime.
 if not (os.environ.get("UNIT_TEST", False)):
