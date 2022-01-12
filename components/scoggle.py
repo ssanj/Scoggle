@@ -208,11 +208,10 @@ class Scoggle:
 
     @staticmethod
     def is_visible(view, version):
-        if (view and  view.settings() and view.settings().has("syntax")):
-            syntax = view.settings().get('syntax')
-            if (int(version) <= 3083):
-                return syntax.endswith("Scala.tmLanguage")
-            else:
-                return syntax.endswith("Scala.sublime-syntax")
+        if (view and view.sel() and len(view.sel()) != 0):
+             if "source.scala" in view.scope_name(view.sel()[0].begin()):
+                return True
+             else:
+                return False
         else:
             return False

@@ -2,7 +2,7 @@
 
 # Scoggle #
 
-Scoggle is a Sublime Text 3 plugin that will allow you to toggle between production and test code. It will allow you to do this in a number of configurable ways.
+Scoggle is a Sublime Text 3/4 plugin that will allow you to toggle between production and test code. It will allow you to do this in a number of configurable ways.
 
 ## Installation ##
 

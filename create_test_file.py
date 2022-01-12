@@ -26,42 +26,46 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
         self.window = self.wrapper.getActiveWindow()
         current_file = self.wrapper.current_file(view)
 
-        self.logger.debug("current file: {0}".format(str(current_file)))
-        test_srcs = self.config.test_srcs
-        prod_srcs = self.config.production_srcs
-        file_ext = self.config.file_ext
-        default_test_suffix = self.config.default_test_suffix
+        # The current file can be null, if there isn't an open file
+        if current_file is not None:
+            self.logger.debug("current file: {0}".format(str(current_file)))
+            test_srcs = self.config.test_srcs
+            prod_srcs = self.config.production_srcs
+            file_ext = self.config.file_ext
+            default_test_suffix = self.config.default_test_suffix
 
-        ## only run for production files not for test files
-        if self.is_production_file(current_file, prod_srcs):
+            ## only run for production files not for test files
+            if self.is_production_file(current_file, prod_srcs):
 
-            # Only run if there are test and production sources
-            if len(test_srcs) != 0 and len(prod_srcs) != 0:
-                try:
-                    root_dir, selected_prod_src = self.scoggle.get_first_root_path_pair_or_error(current_file, prod_srcs)
-                    source_dir_minus_package = os.path.join(root_dir, selected_prod_src)
+                # Only run if there are test and production sources
+                if len(test_srcs) != 0 and len(prod_srcs) != 0:
+                    try:
+                        root_dir, selected_prod_src = self.scoggle.get_first_root_path_pair_or_error(current_file, prod_srcs)
+                        source_dir_minus_package = os.path.join(root_dir, selected_prod_src)
 
-                    ## TODO: check for at least 3 elements
-                    path_pieces = current_file.partition(str(source_dir_minus_package))
-                    # the partition should return 3 pieces:
-                    # 0 -> The String before the of source_dir_minus_package
-                    # 1 -> The match: source_dir_minus_package
-                    # 2 -> The String following the match (package path + file name + ext)
-                    if len(path_pieces) >= 3:
-                        package_path_and_file_ext = path_pieces[2] #get the package path + file name + ext
-                        (package_path, file_name_ext) = os.path.split(package_path_and_file_ext) #get the package path
+                        ## TODO: check for at least 3 elements
+                        path_pieces = current_file.partition(str(source_dir_minus_package))
+                        # the partition should return 3 pieces:
+                        # 0 -> The String before the of source_dir_minus_package
+                        # 1 -> The match: source_dir_minus_package
+                        # 2 -> The String following the match (package path + file name + ext)
+                        if len(path_pieces) >= 3:
+                            package_path_and_file_ext = path_pieces[2] #get the package path + file name + ext
+                            (package_path, file_name_ext) = os.path.split(package_path_and_file_ext) #get the package path
 
-                        self.handle_test_file_creation(view, root_dir, package_path, test_srcs, file_name_ext, default_test_suffix)
-                    else:
-                        self.logger.error("Could not split source_dir_minus_package into 3: {0}".format(str(path_pieces)))
+                            self.handle_test_file_creation(view, root_dir, package_path, test_srcs, file_name_ext, default_test_suffix)
+                        else:
+                            self.logger.error("Could not split source_dir_minus_package into 3: {0}".format(str(path_pieces)))
 
-                except stypes.CantFindRootPathError as cfrpe:
-                    self.logger.error(cfrpe.cause)
-                    self.wrapper.show_error_message_with_location(cfrpe.cause, display_error_location)
+                    except stypes.CantFindRootPathError as cfrpe:
+                        self.logger.error(cfrpe.cause)
+                        self.wrapper.show_error_message_with_location(cfrpe.cause, display_error_location)
+                else:
+                    self.wrapper.show_error_message_with_location("Ensure to have at least one test_srcs and at least one production_srcs defined to use this functionality", display_error_location)
             else:
-                self.wrapper.show_error_message_with_location("Ensure to have at least one test_srcs and at least one production_srcs defined to use this functionality", display_error_location)
+                self.wrapper.show_error_message_with_location("You can only create a test file from a production file", display_error_location)
         else:
-            self.wrapper.show_error_message_with_location("You can only create a test file from a production file", display_error_location)
+            self.logger.debug("No file selected")
 
     def handle_test_file_creation(self, view, root_dir, package_path, test_srcs, file_name_ext, test_suffix):
         region_string = view.sel()[0] #get the first selection region
