@@ -31,8 +31,10 @@ class ShowModuleCommand(sublime_plugin.TextCommand):
             module_name = self.extract_module_name(current_file)
             if module_name is not None:
                 self.logger.debug("module: %s", str(module_name))
+                view.show_popup("<h1>{0}</h1>".format(str(module_name)), sublime.HIDE_ON_MOUSE_MOVE)
             else:
-                self.logger.error("Could not determine module")
+                error_message = "Could not determine module"
+                self.logger.error(error_message)
         else:
             self.logger.debug("No file selected")
 
@@ -47,8 +49,8 @@ class ShowModuleCommand(sublime_plugin.TextCommand):
             self.logger.debug("current file: {0}".format(str(current_file)))
             test_srcs = self.config.test_srcs
             prod_srcs = self.config.production_srcs
+            display_error_location = self.config.display_error_location
 
-            # ## only run for production files not for test files
             if self.is_production_file(current_file, prod_srcs):
                 result = self.get_production_module_name(current_file, prod_srcs)
                 self.logger.debug("prod module: %s", str(result))
