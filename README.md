@@ -338,3 +338,12 @@ If a test file with the same name already exists at the path specified, you will
 ![Retry Duplicate Test File Names](scoggle_sublime_text_duplicate_test_file_name.png)
 
 The default test file suffix used (`Spec.scala` in the above example) is retrieve from the `default_test_suffix` key in the settings file.
+
+
+### Show Current Module ###
+
+[__CMD + CTRL + SHIFT + M__]
+
+![Displaying the current Module](scoggle_sublime_text_plugin_show-module.gif)
+
+When using a multi-module project, it can get confusing as to which module you're currently working in. Running this command from any production or test file will display the current module.
