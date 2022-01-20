@@ -4,5 +4,6 @@
     { "caption": "Scoggle: Toggle fuzzy", "command": "scoggle", "args": {"matcher": "wildcard_prefix_wildcard_suffix_matcher"} },
     { "caption": "Scoggle: Insert package", "command": "package", "args": {"style": "full"} },
     { "caption": "Scoggle: Insert package Steps", "command": "package", "args": {"style": "step"} },
-    { "caption": "Scoggle: Create test file", "command": "prompt_create_test" }
+    { "caption": "Scoggle: Create test file", "command": "prompt_create_test" },
+    { "caption": "Scoggle: Show module name", "command": "show_module" },
 ]
