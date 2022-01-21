@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ssanj/Scoggle.svg?branch=master)](https://travis-ci.org/ssanj/Scoggle)
+![](https://img.shields.io/github/v/release/ssanj/Scoggle?display_name=tag)
 
 # Scoggle #
 
@@ -87,10 +87,13 @@ Here's a sample .sublime-project file with Scoggle settings:
 }
 ```
 
-_Note: any settings not mentioned in the project settings will be sourced from the default settings or user settings if they have been overridden.
-_Gotcha: remember that project settings are only active when you open the source directory as a Project not through File > Open._
+_Note: any settings not mentioned in the project settings will be sourced from the default settings or user settings if they have been overridden._
+
+_Gotcha: remember that project settings are only active when you open the source directory as a Project through `Project > Open Project...` not through `File > Open`._
 
 _When customising settings for Windows, remember to replace forward slashes with double backslashes._
+
+If you don't want to write your custom settings by hand you can generate a custom configuration for most settings by using [scoggle-gen](https://github.com/ssanj/scoggle-gen/releases/latest).
 
 ## Matching Strategies ##
 
