@@ -64,16 +64,15 @@ class ShowModuleCommand(sublime_plugin.TextCommand):
                 self.logger.error(error_message)
                 self.wrapper.show_error_message_with_location(error_message, display_error_location)
                 return None
-        except stypes.CantFindRootPathError as cfrpe:
-            self.logger.error(cfrpe.cause)
-            self.wrapper.show_error_message_with_location(cfrpe.cause, display_error_location)
+        except (stypes.CantFindRootPathError, stypes.CantFindModuleNameError) as cfe:
+            error_message = cfe.cause
+            self.logger.error(error_message)
+            self.wrapper.show_error_message_with_location(error_message, display_error_location)
             return None
 
     def get_production_module_name(self, current_file, prod_srcs):
-        result = self.scoggle.get_first_root_path_or_error(current_file, prod_srcs)
-        return os.path.basename(os.path.normpath(result))
+        return self.scoggle.get_module_path_or_error(current_file, prod_srcs)
 
     def get_test_module_name(self, current_file, test_srcs):
-        result = self.scoggle.get_first_root_path_or_error(current_file, test_srcs)
-        return os.path.basename(os.path.normpath(result))
+        return self.scoggle.get_module_path_or_error(current_file, test_srcs)
 

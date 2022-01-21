@@ -23,8 +23,34 @@ class Scoggle:
         for p in paths:
             if file.find(p) != -1:
                 return file.partition(p)[0]
-
         raise stypes.CantFindRootPathError(file, paths)
+
+    def get_module_path_or_error(self, file, paths):
+        for p in paths:
+            if file.find(p) != -1:
+                partitions = file.partition(p)
+                if len(partitions) >= 2:
+                    module_partition = partitions[1]
+                    module_parts = list(filter(None, module_partition.split(os.path.sep)))
+                    if (len(module_partition) > 0):
+                        result = module_parts[0]
+                        # single module project
+                        # assumption: If you have a multi-module project you will
+                        # use custom settings for paths, a couple for each module
+                        if result == 'src':
+                            # return project name
+                            root = self.get_first_root_path_or_error(file, paths)
+                            return os.path.basename(os.path.normpath(root))
+                        else:
+                            return result
+                    else: # raise CantFindModuleNameError
+                        pass
+                else: # raise CantFindModuleNameError
+                    pass
+            else: # raise CantFindModuleNameError
+                pass
+
+        raise stypes.CantFindModuleNameError(file, paths)
 
     def get_first_root_path_pair_or_error(self, file, paths):
         for p in paths:

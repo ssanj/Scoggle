@@ -36,8 +36,43 @@ class ScoggleTest(unittest.TestCase):
   def test_get_first_root_path_or_error_with_single_matching_path(self):
       self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/testDir"]), "/root/project")
 
-  # does_file_contain_path
+  def test_get_module_path_or_error_with_single_matching_path(self):
+      self.assertEqual(
+        self.cut.get_module_path_or_error("/root/some_project/some_module1/src/main/scala/package/someFile",
+            [
+              "/some_module1/src/main/scala",
+              "/some_module1/src/test/scala",
+              "/some_module2/src/main/scala",
+              "/some_module2/src/test/scala"
+            ]),
+            "some_module1")
 
+  # On a non-multi-module project, returns the root project name
+  def test_get_module_path_or_error_on_single_project(self):
+      self.assertEqual(
+        self.cut.get_module_path_or_error("/root/some_project/src/main/scala/package/someFile",
+            [
+              "/src/main/scala",
+              "/src/test/scala",
+            ]),
+            "some_project")
+
+
+  def test_get_module_path_or_error_without_a_match(self):
+    try:
+      self.cut.get_module_path_or_error("/root/some_project/some_moduleX/src/main/scala/package/someFile",
+            [
+              "/some_module1/src/main/scala",
+              "/some_module1/src/test/scala",
+              "/some_module2/src/main/scala",
+              "/some_module2/src/test/scala"
+            ])
+    except stypes.CantFindModuleNameError as e:
+      self.assertEqual(e.cause,
+        "Can't find module name of file: /root/some_project/some_moduleX/src/main/scala/package/someFile, from these paths: ['/some_module1/src/main/scala', '/some_module1/src/test/scala', '/some_module2/src/main/scala', '/some_module2/src/test/scala']")
+
+
+  # does_file_contain_path
   def test_get_first_root_path_or_error_with_single_matching_path(self):
       self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/testDir"]), "/root/project")
 

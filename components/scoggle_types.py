@@ -109,6 +109,15 @@ class CantFindRootPathError(Exception):
     def __str__(self):
         return repr(self.cause)
 
+# Exception thrown when the module name of a file can't be determined from those supplied.
+class CantFindModuleNameError(Exception):
+
+    def __init__(self, file, paths):
+        self.cause = "Can't find module name of file: " + str(file) + ", from these paths: " + str(paths)
+
+    def __str__(self):
+        return repr(self.cause)
+
 # Exception thrown when the matching strategy requested can't be found.
 class UnknownStrategy(Exception):
     def __init__(self, strategy):
