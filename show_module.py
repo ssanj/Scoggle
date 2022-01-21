@@ -30,13 +30,16 @@ class ShowModuleCommand(sublime_plugin.TextCommand):
         if current_file is not None:
             module_name = self.extract_module_name(current_file)
             if module_name is not None:
-                self.logger.debug("module: %s", str(module_name))
-                view.show_popup("<h1>{0}</h1>".format(str(module_name)), sublime.HIDE_ON_MOUSE_MOVE)
+                self.show_module_in_sublime(view, module_name)
             else:
                 error_message = "Could not determine module"
                 self.logger.error(error_message)
         else:
             self.logger.debug("No file selected")
+
+    def show_module_in_sublime(self, view, module_name):
+        self.logger.debug("module: %s", str(module_name))
+        view.show_popup("<h1>{0}</h1>".format(str(module_name)), sublime.HIDE_ON_CHARACTER_EVENT, max_width=800)
 
     def is_production_file(self, current_file, prod_srcs):
         return self.scoggle.does_file_contain_path(current_file, prod_srcs)
