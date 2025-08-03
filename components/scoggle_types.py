@@ -145,17 +145,17 @@ class TestFileCreationParam():
         suffix - the test file suffix
         test_templates - the test templates to use when creating a test file
     """
-    def __init__(self, root_dir, package_dir, test_srcs, file_name, suffix):
+    def __init__(self, root_dir, package_dir, test_srcs, file_name, suffix, test_templates):
         self.root_dir = root_dir
         self.package_dir = package_dir
         self.test_srcs = test_srcs
         self.file_name = file_name
         self.suffix = suffix
         self.root_test_src_path = None
-        # self.test_templates = test_templates
+        self.test_templates = test_templates
 
     def with_new_file_name(self, package_dir, new_file_name, new_suffix):
-        new_params = TestFileCreationParam(self.root_dir, package_dir, self.test_srcs, new_file_name, new_suffix)
+        new_params = TestFileCreationParam(self.root_dir, package_dir, self.test_srcs, new_file_name, new_suffix, self.test_templates)
         new_params.root_test_src_path = self.root_test_src_path
         return new_params
 
@@ -168,7 +168,7 @@ class TestFileCreationParam():
                 ", file_name=" + str(self.file_name) +
                 ", suffix=" + str(self.suffix) +
                 ", root_test_src_path=" + str(self.root_test_src_path) +
-                # ", self.test_templates=" + str(self.self.test_templates) +
+                ", self.test_templates=" + str(self.test_templates) +
              ")"
         )
         return repr(to_string)
