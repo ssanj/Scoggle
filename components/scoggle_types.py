@@ -143,6 +143,7 @@ class TestFileCreationParam():
         test_srcs - the list of test source directories
         file_name - the prefix for the test file
         suffix - the test file suffix
+        test_templates - the test templates to use when creating a test file
     """
     def __init__(self, root_dir, package_dir, test_srcs, file_name, suffix):
         self.root_dir = root_dir
@@ -151,6 +152,7 @@ class TestFileCreationParam():
         self.file_name = file_name
         self.suffix = suffix
         self.root_test_src_path = None
+        # self.test_templates = test_templates
 
     def with_new_file_name(self, package_dir, new_file_name, new_suffix):
         new_params = TestFileCreationParam(self.root_dir, package_dir, self.test_srcs, new_file_name, new_suffix)
@@ -166,9 +168,27 @@ class TestFileCreationParam():
                 ", file_name=" + str(self.file_name) +
                 ", suffix=" + str(self.suffix) +
                 ", root_test_src_path=" + str(self.root_test_src_path) +
+                # ", self.test_templates=" + str(self.self.test_templates) +
              ")"
         )
         return repr(to_string)
+
+class TestTemplate():
+    def __init__(self, name, content):
+        self.name = name
+        self.content = content
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        fields = [
+                "name={0}".format(str(self.name))
+            ,   "content={0}".format(str(self.content))
+        ]
+
+        to_string ="TestTemplate({0})".format(','.join(fields))
+        return to_string
 
 class ScoggleConfig():
 
@@ -186,6 +206,14 @@ class ScoggleConfig():
         self.production_srcs = sublimeWrapper.get_setting("production_srcs", project_settings_dict, settings)
         self.file_ext = sublimeWrapper.get_setting("file_ext", project_settings_dict, settings)
         self.default_test_suffix = sublimeWrapper.get_setting_with_default("default_test_suffix", project_settings_dict, settings, "Spec.scala")
+
+        test_templates = sublimeWrapper.get_setting_with_default("test_templates", project_settings_dict, settings, {})
+
+        test_template_values = []
+        for (name, content) in test_templates.items():
+            test_template_values.append(TestTemplate(name, content))
+
+        self.test_templates = test_template_values
 
         self.should_log = sublimeWrapper.get_setting("log", project_settings_dict, settings)
 
@@ -208,6 +236,7 @@ class ScoggleConfig():
             ,   ", should_log={0}".format(str(self.should_log))
             ,   ", file_ext={0}".format(str(self.file_ext))
             ,   ", default_test_suffix={0}".format(str(self.default_test_suffix))
+            ,   ", test_templates={0}".format(str(self.test_templates))
         ]
 
         to_string ="ScoggleConfig({0})".format('\n'.join(fields))

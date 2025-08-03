@@ -15,6 +15,10 @@
         "Test.scala",
         "Specification.scala"
     ],
+    "test_templates":{
+        "template1": "final class {CLASS_NAME}\n//your code here - 1",
+        "template2": "final class {CLASS_NAME}\n//your code here - 2"
+    },
     "log" : false,
     "file_ext" : ".scala",
     "display_errors_in" : "dialog", // one of ("dialog", "status_bar", "dont_display")
