@@ -16,7 +16,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         self.scoggle = scoggle.Scoggle()
         self.wrapper = sublime_wrapper.SublimeWrapper()
-        self.config  = stypes.ScoggleConfig(self.view, self.wrapper, self.scoggle, override_debug = True)
+        self.config  = stypes.ScoggleConfig(self.view, self.wrapper, self.scoggle, override_debug = False)
         self.logger  = self.config.logger
 
         self.logger.debug("loaded the following configX: {0}".format(str(self.config)))

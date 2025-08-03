@@ -25,7 +25,6 @@ class ScoggleCommand(sublime_plugin.TextCommand):
         return scoggle.Scoggle.is_visible(self.view, sublime.version())
 
     def perform(self):
-        self.logger.warn("-------------> local version"),
         current_file = self.wrapper.current_file(self.view)
         settings = self.wrapper.load_settings("Scoggle")
         project_settings_dict = self.wrapper.load_project_settings(self.view)

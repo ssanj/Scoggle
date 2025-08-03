@@ -207,13 +207,6 @@ class ScoggleConfig():
         self.file_ext = sublimeWrapper.get_setting("file_ext", project_settings_dict, settings)
         self.default_test_suffix = sublimeWrapper.get_setting_with_default("default_test_suffix", project_settings_dict, settings, "Spec.scala")
 
-        test_templates = sublimeWrapper.get_setting_with_default("test_templates", project_settings_dict, settings, {})
-
-        test_template_values = []
-        for (name, content) in test_templates.items():
-            test_template_values.append(TestTemplate(name, content))
-
-        self.test_templates = test_template_values
 
         self.should_log = sublimeWrapper.get_setting("log", project_settings_dict, settings)
 
@@ -227,6 +220,33 @@ class ScoggleConfig():
         else:
             self.logger.setLevel(logging.ERROR)
 
+        self.test_templates = self.read_test_template_files(view.window())
+
+    def read_test_template_files(self, window):
+        # find the directory
+        # in the project directory, look for a .scoggle/scoggle-test-templates folder
+        template_files = []
+        if window and window.project_file_name():
+            import os
+            project_file_name = window.project_file_name()
+            project_path = os.path.dirname(project_file_name)
+
+            test_templates_dir = "{0}/{1}".format(project_path, ".scoggle/test-templates")
+            self.logger.debug("project test_templates_dir: {0}".format(test_templates_dir))
+
+            if os.path.exists(test_templates_dir):
+                for file in os.listdir(test_templates_dir):
+                    if file.endswith(".scoggle-test"):
+                        name = os.path.basename(file).split('.')[0]
+                        full_template_path = "{0}/{1}".format(test_templates_dir, file)
+                        with open(full_template_path) as f:
+                            content = f.read()
+                            template_files.append(TestTemplate(name, content))
+            else:
+                self.logger.debug("Could not find test templates directory at: {0}".format(template_files))
+
+        self.logger.debug("Using test template files: {0}".format(template_files))
+        return template_files
 
     def __str__(self):
         fields = [
