@@ -174,8 +174,8 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
             test_templates_options = list(map(lambda item: item.name, test_templates))
             self.window.show_quick_panel(test_templates_options, handle_test_template_selection, placeholder="select test template")
         else:
-            test_template = default_template_string(test_file_path_creator)
-            open_test_file(incoming, test_template)
+            test_template = self.default_template_string(test_file_path_creator)
+            self.open_test_file(incoming, test_template)
 
 
     def open_test_file(self, incoming, test_template):
