@@ -1,2 +1,2 @@
 #!/bin/bash
-UNIT_TEST=True python -m unittest discover -v -s ".." -p "*_test.py"
+UNIT_TEST=TRUE python3 -m unittest discover -t .. -v -p '*_test.py'
