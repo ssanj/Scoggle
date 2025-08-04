@@ -59,6 +59,20 @@ class Scoggle:
 
         raise stypes.CantFindRootPathError(file, paths)
 
+    def get_longest_root_path_pair_or_error(self, file, paths):
+      match = None
+      for p in paths:
+          if file.find(p) != -1:
+              if match:
+                  if len(p) > len(match):
+                      match = p
+              else:
+                  match = p
+      if match:
+          return (file.partition(match)[0], match)
+
+      raise stypes.CantFindRootPathError(file, paths)
+
     def get_path_minus_file(self, current_file):
         return os.path.split(current_file)[0]
 

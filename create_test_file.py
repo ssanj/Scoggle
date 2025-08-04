@@ -41,7 +41,7 @@ class PromptCreateTestCommand(sublime_plugin.TextCommand):
                 # Only run if there are test and production sources
                 if len(test_srcs) != 0 and len(prod_srcs) != 0:
                     try:
-                        root_dir, selected_prod_src = self.scoggle.get_first_root_path_pair_or_error(current_file, prod_srcs)
+                        root_dir, selected_prod_src = self.scoggle.get_longest_root_path_pair_or_error(current_file, prod_srcs)
                         source_dir_minus_package = os.path.join(root_dir, selected_prod_src)
 
                         ## TODO: check for at least 3 elements

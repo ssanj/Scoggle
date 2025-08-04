@@ -36,6 +36,12 @@ class ScoggleTest(unittest.TestCase):
   def test_get_first_root_path_or_error_with_single_matching_path(self):
       self.assertEqual(self.cut.get_first_root_path_or_error("/root/project/testDir/package/someFile", ["/testDir"]), "/root/project")
 
+  # def test_get_first_root_path_pair(self):
+  #     self.assertEqual(self.cut.get_first_root_path_pair_or_error("/root/project/src/main/scala-2.12/package/someFile.scala", ["/src/main/scala", "/src/main/scala-2.12"]), ("/root/project", "/src/main/scala-2.12"))
+
+  def test_get_longest_root_path_pair(self):
+      self.assertEqual(self.cut.get_longest_root_path_pair_or_error("/root/project/src/main/scala-2.12/package/someFile.scala", ["/src/main/scala", "/src/main/scala-2.12"]), ("/root/project", "/src/main/scala-2.12"))
+
   def test_get_module_path_or_error_with_single_matching_path(self):
       self.assertEqual(
         self.cut.get_module_path_or_error("/root/some_project/some_module1/src/main/scala/package/someFile",
