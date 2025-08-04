@@ -343,6 +343,53 @@ If a test file with the same name already exists at the path specified, you will
 The default test file suffix used (`Spec.scala` in the above example) is retrieve from the `default_test_suffix` key in the settings file.
 
 
+#### Using custom test templates
+
+You can use custom test templates when creating a test file. If none are specified a default is used.
+
+![Using a custom test template](scoggle_sublime_test_template.gif)
+
+To specify your own test templates create the `.scoggle/test-templates` folder under your project directory. In this
+folder create your test templates with the `.scoggle-test` extension. The file name (minus extension) will be supplied
+to all templates when using the `{CLASS_NAME}` variable. In addition the package of the test file will be automatically
+prepended to your template.
+
+Given an example template `simple_boon_suite.scoggle-test` under `.scoggle/test-templates`:
+
+```scala
+import boon._
+
+object {CLASS_NAME} extends SuiteLike("{CLASS_NAME}Suite") {
+
+private val t1 = test("equality of things") {
+    1 =?= 1             | "Int equality"    and
+    "Hello" =?= "Hello" | "String equality" and
+    true =?= true       | "Boolean equality"
+  }
+
+  override val tests = one(t1)
+}
+```
+
+This will generate the following test file:
+
+```scala
+package dotted.package.path
+
+import boon._
+
+object NameOfClass extends SuiteLike("NameOfClassSuite") {
+
+private val t1 = test("equality of things") {
+    1 =?= 1             | "Int equality"    and
+    "Hello" =?= "Hello" | "String equality" and
+    true =?= true       | "Boolean equality"
+  }
+
+  override val tests = one(t1)
+}
+```
+
 ### Show Current Module ###
 
 [__CMD + CTRL + SHIFT + M__]

@@ -143,17 +143,19 @@ class TestFileCreationParam():
         test_srcs - the list of test source directories
         file_name - the prefix for the test file
         suffix - the test file suffix
+        test_templates - the test templates to use when creating a test file
     """
-    def __init__(self, root_dir, package_dir, test_srcs, file_name, suffix):
+    def __init__(self, root_dir, package_dir, test_srcs, file_name, suffix, test_templates):
         self.root_dir = root_dir
         self.package_dir = package_dir
         self.test_srcs = test_srcs
         self.file_name = file_name
         self.suffix = suffix
         self.root_test_src_path = None
+        self.test_templates = test_templates
 
     def with_new_file_name(self, package_dir, new_file_name, new_suffix):
-        new_params = TestFileCreationParam(self.root_dir, package_dir, self.test_srcs, new_file_name, new_suffix)
+        new_params = TestFileCreationParam(self.root_dir, package_dir, self.test_srcs, new_file_name, new_suffix, self.test_templates)
         new_params.root_test_src_path = self.root_test_src_path
         return new_params
 
@@ -166,9 +168,27 @@ class TestFileCreationParam():
                 ", file_name=" + str(self.file_name) +
                 ", suffix=" + str(self.suffix) +
                 ", root_test_src_path=" + str(self.root_test_src_path) +
+                ", self.test_templates=" + str(self.test_templates) +
              ")"
         )
         return repr(to_string)
+
+class TestTemplate():
+    def __init__(self, name, content):
+        self.name = name
+        self.content = content
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        fields = [
+                "name={0}".format(str(self.name))
+            ,   "content={0}".format(str(self.content))
+        ]
+
+        to_string ="TestTemplate({0})".format(','.join(fields))
+        return to_string
 
 class ScoggleConfig():
 
@@ -187,6 +207,7 @@ class ScoggleConfig():
         self.file_ext = sublimeWrapper.get_setting("file_ext", project_settings_dict, settings)
         self.default_test_suffix = sublimeWrapper.get_setting_with_default("default_test_suffix", project_settings_dict, settings, "Spec.scala")
 
+
         self.should_log = sublimeWrapper.get_setting("log", project_settings_dict, settings)
 
         self.display_error_location = scoggle.get_display_error_location(
@@ -199,6 +220,33 @@ class ScoggleConfig():
         else:
             self.logger.setLevel(logging.ERROR)
 
+        self.test_templates = self.read_test_template_files(view.window())
+
+    def read_test_template_files(self, window):
+        # find the directory
+        # in the project directory, look for a .scoggle/scoggle-test-templates folder
+        template_files = []
+        if window and window.project_file_name():
+            import os
+            project_file_name = window.project_file_name()
+            project_path = os.path.dirname(project_file_name)
+
+            test_templates_dir = "{0}/{1}".format(project_path, ".scoggle/test-templates")
+            self.logger.debug("project test_templates_dir: {0}".format(test_templates_dir))
+
+            if os.path.exists(test_templates_dir):
+                for file in os.listdir(test_templates_dir):
+                    if file.endswith(".scoggle-test"):
+                        name = os.path.basename(file).split('.')[0]
+                        full_template_path = "{0}/{1}".format(test_templates_dir, file)
+                        with open(full_template_path) as f:
+                            content = f.read()
+                            template_files.append(TestTemplate(name, content))
+            else:
+                self.logger.debug("Could not find test templates directory at: {0}".format(template_files))
+
+        self.logger.debug("Using test template files: {0}".format(template_files))
+        return template_files
 
     def __str__(self):
         fields = [
@@ -208,6 +256,7 @@ class ScoggleConfig():
             ,   ", should_log={0}".format(str(self.should_log))
             ,   ", file_ext={0}".format(str(self.file_ext))
             ,   ", default_test_suffix={0}".format(str(self.default_test_suffix))
+            ,   ", test_templates={0}".format(str(self.test_templates))
         ]
 
         to_string ="ScoggleConfig({0})".format('\n'.join(fields))
