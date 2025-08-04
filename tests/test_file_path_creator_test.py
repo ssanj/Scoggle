@@ -12,7 +12,8 @@ class TestFilePathCreatorTest(unittest.TestCase):
       test_srcs = ["/src/test/"]
       file_name = "AwesomeThing"
       suffix = "Suite.scala"
-      params = stypes.TestFileCreationParam(root_dir, package_dir, test_srcs, file_name, suffix)
+      test_templates = []
+      params = stypes.TestFileCreationParam(root_dir, package_dir, test_srcs, file_name, suffix, test_templates)
 
       creator = tftypes.TestFilePathCreator(params, None)
 
@@ -31,7 +32,8 @@ class TestFilePathCreatorTest(unittest.TestCase):
       test_srcs = ["/src/test/"]
       file_name = "AwesomeThing"
       suffix = "Suite.scala"
-      params = stypes.TestFileCreationParam(root_dir, package_dir, test_srcs, file_name, suffix)
+      test_templates = []
+      params = stypes.TestFileCreationParam(root_dir, package_dir, test_srcs, file_name, suffix, test_templates)
 
       creator = tftypes.TestFilePathCreator(params, None)
 
@@ -61,7 +63,8 @@ class TestFilePathCreatorTest(unittest.TestCase):
       test_srcs = ["/src/test/"]
       file_name = "AwesomeThing"
       suffix = "Suite.scala"
-      params = stypes.TestFileCreationParam(root_dir, package_dir, test_srcs, file_name, suffix)
+      test_templates = []
+      params = stypes.TestFileCreationParam(root_dir, package_dir, test_srcs, file_name, suffix, test_templates)
       logger =  MyLogger()
 
       creator = tftypes.TestFilePathCreator(params, logger)
@@ -92,7 +95,8 @@ class TestFilePathCreatorTest(unittest.TestCase):
       test_srcs = ["/src/test/"]
       file_name = "AwesomeThing"
       suffix = "Suite.scala"
-      params = stypes.TestFileCreationParam(root_dir, package_dir, test_srcs, file_name, suffix)
+      test_templates = []
+      params = stypes.TestFileCreationParam(root_dir, package_dir, test_srcs, file_name, suffix, test_templates)
       logger = MyLogger()
       creator = tftypes.TestFilePathCreator(params, logger)
 
@@ -113,7 +117,6 @@ class TestFilePathCreatorTest(unittest.TestCase):
 
       self.assertEqual(new_test_file_class_name, "AwesomeThingSuite")
       self.assertEqual(new_package_path, "my.awesome.project.take2")
-
 
 class MyLogger():
 
