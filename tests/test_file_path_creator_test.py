@@ -1,9 +1,7 @@
 import unittest
 import Scoggle.components.scoggle_types as stypes
 import Scoggle.components.test_path_creator as tftypes
-import os
 
-# TODO: Fix tests to use test_templates
 class TestFilePathCreatorTest(unittest.TestCase):
 
   def test_get_test_file_params(self):
