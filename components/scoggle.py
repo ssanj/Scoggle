@@ -83,7 +83,7 @@ class Scoggle:
             if current_file.startswith(p):
                 return os.path.split(current_file)[0][len(p):][1:].replace(os.sep, ".")
 
-        raise sypes.CantDeterminePackageError(current_file, paths)
+        raise stypes.CantDeterminePackageError(current_file, paths)
 
     def already_has_package(self, content):
         if (content is None):
